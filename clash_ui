@@ -1,0 +1,984 @@
+#!/bin/bash
+#======================================================
+#   System Required:  Debian 10+ 
+#   Description: Manage clash
+#   Author: J. 20220206
+#======================================================
+
+
+end="\033[0m"
+black="\033[0;30m"
+blackb="\033[1;30m"
+white="\033[0;37m"
+whiteb="\033[1;37m"
+red="\033[0;31m"
+redb="\033[1;31m"
+green="\033[0;32m"
+greenb="\033[1;32m"
+yellow="\033[0;33m"
+yellowb="\033[1;33m"
+blue="\033[0;34m"
+blueb="\033[1;34m"
+purple="\033[0;35m"
+purpleb="\033[1;35m"
+lightblue="\033[0;36m"
+lightblueb="\033[1;36m"
+
+
+sh_ver="3.3.0"
+
+cpu=$(hostnamectl | grep Architecture: | awk '{print $2}')
+
+system=$(cat /etc/issue | awk '{print $1}')
+gateway=$(cat /etc/network/interfaces |grep gateway | awk '{print $2}' | head -n 1)
+
+local_ip=$(ip a 2>&1 | grep -w 'inet' | grep 'global' | grep -E '\ 1(92|0|72|00|1)\.' | sed 's/.*inet.//g' | sed 's/\/[0-9][0-9].*$//g' | head -n 1);
+
+
+eth_n=$(ip --oneline link show up | grep -v "lo" | awk '{print$2;exit}' | cut -d':' -f1 | cut -d'@' -f1)
+
+
+
+webget(){
+	if curl --version > /dev/null 2>&1;then
+		[ "$3" = "echooff" ] && progress='-s' || progress='-#'
+		[ -z "$4" ] && redirect='-L' || redirect=''
+		result=$(curl -w %{http_code} --connect-timeout 5 $progress $redirect -ko $1 $2)
+	else
+		if wget --version > /dev/null 2>&1;then
+			[ "$3" = "echooff" ] && progress='-q' || progress='-q --show-progress'
+			[ "$4" = "rediroff" ] && redirect='--max-redirect=0' || redirect=''
+			certificate='--no-check-certificate'
+			timeout='--timeout=3'
+		fi
+		[ "$3" = "echoon" ] && progress=''
+		[ "$3" = "echooff" ] && progress='-q'
+		wget $progress $redirect $certificate $timeout -O $1 $2 
+		[ $? -eq 0 ] && result="200"
+	fi
+}
+
+
+# check root
+[[ $EUID -ne 0 ]] && echo -e "${red}错误:  必须使用root用户运行此脚本!\n${end}" && exit 1
+
+# check os
+if cat /etc/issue | grep -Eqi "debian"; then
+    release="debian"
+elif cat /etc/issue | grep -Eqi "Armbian"; then
+    release="Armbian"
+else
+    echo -e "${red}请使用 Debian或Armbian 系统!\n${end}" && exit 1
+fi
+
+
+os_version=""
+
+# os version
+if [[ -f /etc/os-release ]]; then
+    os_version=$(awk -F'[= ."]' '/VERSION_ID/{print $3}' /etc/os-release)
+fi
+if [[ -z "$os_version" && -f /etc/lsb-release ]]; then
+    os_version=$(awk -F'[= ."]+' '/DISTRIB_RELEASE/{print $2}' /etc/lsb-release)
+fi
+
+if [[ x"${release}" == x"debian" ]]; then
+    if [[ ${os_version} -lt 10 ]]; then
+        echo -e "${red}请使用 Debian 10 或更高版本的系统!\n${end}" && exit 1
+    fi
+fi
+
+confirm() {
+    if [[ $# > 1 ]]; then
+        echo && read -p "$1 [默认$2]: " temp
+        if [[ x"${temp}" == x"" ]]; then
+            temp=$2
+        fi
+    else
+        read -p "$1 [y/n]: " temp
+    fi
+    if [[ x"${temp}" == x"y" || x"${temp}" == x"Y" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+
+
+supervisor_config() {
+cat << EOF > /etc/supervisor/supervisord.conf
+; supervisor config file
+[unix_http_server]
+file=/var/run/supervisor.sock     ;UNIX socket 文件，supervisorctl 会使用
+chmod=0700                        ;socket文件的mode，默认是0700
+;chown=nobody:nogroup             ;socket文件的owner，格式：uid:gid
+;[inet_http_server]                ;HTTP服务器，提供web管理界面
+;port=0.0.0.0:9089                 ;Web管理后台运行的IP和端口，如果开放到公网，需要注意安全性
+;username=admin                    ;登录管理后台的用户名
+;password=admin                    ;登录管理后台的密码
+[supervisord]
+logfile=/tmp/supervisord.log     ;日志文件，默认是 supervisord.log
+pidfile=/var/run/supervisord.pid            ;pid 文件
+childlogdir=/var/log/supervisor
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+[supervisorctl]
+serverurl=unix:///var/run/supervisor.sock 	;通过UNIX socket连接supervisord，路径与unix_http_server部分的file一致
+;serverurl=http://127.0.0.1:9088 						;通过HTTP的方式连接supervisord
+[include]
+files = /etc/supervisor/conf.d/*.conf
+EOF
+     sudo supervisorctl update >> /dev/null 2>&1
+     sudo supervisorctl reload >> /dev/null 2>&1
+}
+
+supervisor_clash_config() {
+cat << EOF > /etc/supervisor/conf.d/clash.conf
+[program:clash]                                             ;管理clash进程
+user=root                                                   ;启动进程用户，默认是root
+command=/usr/bin/clash -d /srv/clash/                       ;程序启动命令
+autostart=true                                              ;在supervisord启动的时候也自动启动
+startsecs=10                                                ;启动后确认无异常时间
+autorestart=true                                            ;程序退出后自动重启,可选值：[unexpected,true,false]，默认为unexpected，表示进程意外杀死后才重启
+startretries=3                                              ;启动失败自动重试次数，默认是3
+redirect_stderr=true 																				;把stderr重定向到stdout，默认false
+stdout_logfile_maxbytes=20MB  															;stdout 日志文件大小，默认50MB
+stdout_logfile_backups = 5   													   		;stdout 日志文件备份数，默认是10
+stdout_logfile=/tmp/clash.log						      	            ;stdout 日志文件，需要注意当指定目录不存在时无法正常启动，所以需要手动创建目录（supervisord 会自动创建日志文件）
+EOF
+}
+
+supervisor_mosdns_config() {
+cat << EOF > /etc/supervisor/conf.d/mosdns.conf
+[program:mosdns]                                            ;管理mosdns进程
+user=root                                                   ;启动进程用户，默认是root
+command=/usr/bin/mosdns -dir /srv/mosdns/ -c config.yaml    ;程序启动命令
+autostart=true                                              ;在supervisord启动的时候也自动启动
+startsecs=10                                                ;启动后确认无异常时间
+autorestart=true                                            ;程序退出后自动重启,可选值：[unexpected,true,false]，默认为unexpected，表示进程意外杀死后才重启
+startretries=3                                              ;启动失败自动重试次数，默认是3
+redirect_stderr=true 																				;把stderr重定向到stdout，默认false
+stdout_logfile_maxbytes=20MB  															;stdout 日志文件大小，默认50MB
+stdout_logfile_backups = 5   													   		;stdout 日志文件备份数，默认是10
+#stdout_logfile=/tmp/mosdns.log								              ;stdout 日志文件，需要注意当指定目录不存在时无法正常启动，所以需要手动创建目录（supervisord 会自动创建日志文件）
+EOF
+}
+
+
+
+
+
+config_base() { 
+echo -e "${green}优化系统,请稍候!${end}" 
+cat << EOF > /etc/sysctl.conf
+# 开启转发
+net.ipv4.ip_forward = 1
+# 优化参数
+fs.file-max = 1024000
+fs.nr_open = 1048576
+kernel.msgmni = 4096
+kernel.msgmax = 65536
+kernel.msgmnb = 65536
+kernel.shmmni = 1024
+kernel.shmmax = 4294967296
+kernel.shmall = 2097152
+net.core.netdev_max_backlog = 262144
+net.core.somaxconn = 262144
+net.ipv4.tcp_max_syn_backlog = 262144
+net.core.rmem_default = 4194304
+net.core.wmem_default = 4194304
+net.core.rmem_max = 12582912
+net.core.wmem_max = 12582912
+net.core.optmem_max = 81920
+net.ipv4.tcp_mem = 65536 262144 8388608
+net.ipv4.tcp_rmem = 10240 87380 12582912
+net.ipv4.tcp_wmem = 10240 87380 12582912
+net.ipv4.tcp_max_tw_buckets = 5000
+net.ipv4.tcp_fin_timeout = 10
+net.ipv4.tcp_keepalive_time = 1200
+net.ipv4.tcp_keepalive_probes = 5
+net.ipv4.tcp_keepalive_intvl = 15
+net.ipv4.tcp_syn_retries = 3
+net.ipv4.tcp_retries1 = 3
+net.ipv4.tcp_mtu_probing = 1
+net.ipv4.tcp_base_mss = 1452
+net.ipv4.tcp_fack = 1
+net.ipv4.tcp_low_latency = 0
+net.ipv4.tcp_no_metrics_save = 1
+net.ipv4.tcp_sack = 1
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_notsent_lowat = 16384
+net.ipv4.ip_local_port_range = 10000 65535
+net.ipv4.ip_local_reserved_ports = 7892
+net.ipv4.tcp_fastopen = 3
+net.ipv4.ip_default_ttl = 128
+net.ipv4.udp_mem = 65536 262144 8388608
+net.ipv4.udp_rmem_min = 65535
+net.ipv4.udp_wmem_min = 65535
+net.ipv4.route.flush = 1
+# 禁用ipv6
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+# 开启ECN加速
+net.ipv4.tcp_ecn = 1
+net.ipv4.tcp_ecn_fallback = 1
+EOF
+
+echo 'net.core.default_qdisc = fq_pie' | sudo tee /etc/sysctl.d/90-override.conf >> /dev/null 2>&1
+
+sysctl -p >> /dev/null 2>&1
+
+cat << EOF > /etc/security/limits.d/98-nofile.conf
+# add lines to it
+*     soft     nofile     524288
+*     hard     nofile     524288
+root  soft     nofile     524288
+root  hard     nofile     524288
+EOF
+
+
+echo 'DNSStubListener=no'>>/etc/systemd/resolved.conf
+
+}
+
+
+config_ip_dns(){
+echo -e "${green}配置ip信息,请稍候!${end}" 
+rm -rf /etc/resolv.conf
+cat << EOF > /etc/resolv.conf
+nameserver $ip_dns
+EOF
+
+cat << EOF > /etc/network/interfaces
+source /etc/network/interfaces.d/*
+auto lo
+iface lo inet loopback
+auto $eth_n
+iface $eth_n inet static
+  address $ip_add
+  netmask $ip_mask
+  gateway $ip_gw
+  dns-nameservers $ip_dns
+  mtu 1492
+  mss 1452
+EOF
+}
+
+getcpucore(){
+	cputype=$(uname -ms | tr ' ' '_' | tr '[A-Z]' '[a-z]')
+  [ -n "$(echo $cputype | grep -E "linux.*armv7.*")" ] && [ -n "$(cat /proc/cpuinfo | grep vfp)" ] && cpucore="armv7"
+	[ -n "$(echo $cputype | grep -E "linux.*aarch64.*|linux.*armv8.*")" ] && cpucore="armv8"
+	[ -n "$(echo $cputype | grep -E "linux.*86_64.*")" ] && cpucore="amd64"
+}
+
+getcpucore2(){
+	cputype2=$(uname -ms | tr ' ' '_' | tr '[A-Z]' '[a-z]')
+  [ -n "$(echo $cputype2 | grep -E "linux.*armv7.*")" ] && [ -n "$(cat /proc/cpuinfo | grep vfp)" ] && cpucore2="armv7"
+	[ -n "$(echo $cputype2 | grep -E "linux.*aarch64.*|linux.*armv8.*")" ] && cpucore2="arm64"
+	[ -n "$(echo $cputype2 | grep -E "linux.*86_64.*")" ] && cpucore2="amd64"
+}
+
+
+
+install_debian() {
+
+
+rm -rf /etc/apt/sources.list.d/*
+
+cat << EOF > /etc/apt/sources.list
+deb http://mirrors.aliyun.com/debian $(cat /etc/os-release | grep VERSION= | cut -d '(' -f2 | cut -d ')' -f1) main
+deb http://mirrors.aliyun.com/debian-security $(cat /etc/os-release | grep VERSION= | cut -d '(' -f2 | cut -d ')' -f1)/updates main
+deb http://mirrors.aliyun.com/debian $(cat /etc/os-release | grep VERSION= | cut -d '(' -f2 | cut -d ')' -f1)-updates main
+EOF
+echo -e "${green}升级系统,请稍候! 大概5-10分钟!${end}" 
+apt update >> /dev/null 2>&1
+apt -y full-upgrade >> /dev/null 2>&1
+apt -y autoclean >> /dev/null 2>&1 
+echo -e "${green}系统升级完成!${end}"
+
+
+echo -e "${green}安装软件,请稍候! 大概5-10分钟!${end}"     
+apt -y install htop sudo strace supervisor curl wget unzip nftables ntpdate net-tools gawk >> /dev/null 2>&1
+rm /etc/localtime
+ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+ntpdate cn.pool.ntp.org >> /dev/null 2>&1
+chown -R root /srv/ >> /dev/null 2>&1
+echo -e "${green}软件安装完成!${end}"
+
+}
+
+install_clash() {
+     new_clash_ver=$(cat /srv/version  | grep clash_v | awk '{print $2}')
+     if [[ ! -n "$new_clash_ver" ]]; then
+     echo -e "${red}Clash检测版本失败!${end}"
+     exit 1
+     fi      
+     if [ ! -d "/tmp/clash" ]; then
+     mkdir /tmp/clash
+     fi 
+     webget /tmp/clash/clash.gz "https://raw.githubusercontent.com/adhll/c-m/main/clash/clash-linux-${cpucore}-${new_clash_ver}.gz"
+     if [[ "$result" != "200" ]]; then
+     echo -e "${red}Clash下载失败!${end}"
+     exit 1
+     fi
+     echo -e "${green}Clash下载成功!${end}" 
+     rm -rf /usr/bin/clash
+     gunzip /tmp/clash/clash.gz
+     mv /tmp/clash/clash /usr/bin/clash
+     chmod +x /usr/bin/clash
+     setcap cap_net_bind_service=+ep /usr/bin/clash
+     webget  /tmp/dashboard.tar.gz  https://raw.githubusercontent.com/adhll/c-m/main/clash/dashboard.tar.gz
+     if [[ "$result" != "200" ]]; then
+     echo -e "${red}UI下载失败!${end}"
+     exit 1
+     fi
+     echo -e "${green}UI下载成功!${end}" 
+     if [ ! -d "/srv/clash" ]; then
+     mkdir /srv/clash
+     fi 
+     webget /srv/clash/Country.mmdb https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country.mmdb
+     tar zxvf /tmp/dashboard.tar.gz  -C /srv/clash/ >> /dev/null 2>&1
+     rm -rf /tmp/dashboard.tar.gz
+     supervisor_clash_config
+     supervisorctl update >> /dev/null 2>&1
+     supervisorctl restart clash >> /dev/null 2>&1
+     echo -e "${green}Clash安装成功!${end}"
+     echo -e "${green}Clash初始化!${end}" &&sleep 30
+}
+
+update_clash_y() {
+    getcpucore
+    getcpucore2
+        new_clash_ver=$(cat /srv/version  | grep clash_v | awk '{print $2}')
+        if [[ ! -n "$new_clash_ver" ]]; then
+        echo -e "${red}Clash检测版本失败!${end}"
+        exit 1
+        fi  
+	      if [ ! -d "/tmp/clash" ]; then
+        mkdir /tmp/clash
+        fi            
+        webget /tmp/clash/clash.gz "https://raw.githubusercontent.com/adhll/c-m/main/clash/clash-linux-${cpucore}-${new_clash_ver}.gz"
+        if [["$result" != "200" ]]; then
+        echo -e "${red}Clash下载失败!${end}"
+        exit 1
+        fi
+        echo -e "${green}Clash下载成功!${end}" 
+        rm -rf /usr/bin/clash
+        gunzip /tmp/clash/clash.gz
+        mv /tmp/clash/clash /usr/bin/clash
+        chmod +x /usr/bin/clash
+        rm -rf /tmp/clash
+        supervisorctl restart clash >> /dev/null 2>&1
+        echo -e "${green}升级Clash成功，请重新运行脚本!${end}" && exit 0
+
+}
+
+update_clash() {
+        new_clash_ver=$(cat /srv/version  | grep clash_v | awk '{print $2}')
+        now_clash_ver=$(clash -v | awk '{print $2}')
+      	if [[ "${now_clash_ver}" != "${new_clash_ver}" ]]  ;then
+	      echo -e "Clash已有新版本: ${new_clash_ver}，当前版本:${now_clash_ver}，开始安装"
+        if [[ ! -n "$new_clash_ver" ]]; then
+        echo -e "${red}Clash检测版本失败!${end}"
+        exit 1
+        fi
+        if [ ! -d "/tmp/clash" ]; then
+        mkdir /tmp/clash
+        fi 
+        webget /tmp/clash/clash.gz "https://raw.githubusercontent.com/adhll/c-m/main/clash/clash-linux-${cpucore}-${new_clash_ver}.gz"
+        if [[ "$result" != "200" ]]; then
+        echo -e "${red}Clash下载失败!${end}"
+        exit 1
+        fi
+        echo -e "${green}Clash下载成功!${end}" 
+        rm -rf /usr/bin/clash
+        gunzip /tmp/clash/clash.gz
+        mv /tmp/clash/clash /usr/bin/clash
+        chmod +x /usr/bin/clash
+        supervisorctl restart clash >> /dev/null 2>&1
+        echo -e "${green}Clash升级成功，请重新运行脚本!${end}" && exit 0
+        fi
+}
+
+install_mosdns() {
+     new_mosdns_ver=$(cat /srv/version  | grep mosdns_v | awk '{print $2}'| cut -d'-' -f1)
+     if [[ ! -n "$new_mosdns_ver" ]]; then
+     echo -e "${red}Mosdns检测版本失败!${end}"
+     exit 1
+     fi
+     if [ ! -d "/tmp/mosdns" ]; then
+     mkdir /tmp/mosdns
+     fi 
+     cd /tmp/mosdns
+     if [ ! -d "/srv/mosdns" ]; then
+     mkdir /srv/mosdns
+     fi 
+     webget  /tmp/mosdns/mosdns.zip "https://raw.githubusercontent.com/adhll/c-m/main/mosdns/mosdns-linux-${cpucore2}.zip"
+        if [[ "$result" != "200" ]]; then
+     echo -e "${red}Mosdns下载失败!${end}"
+     exit 1
+     fi
+     echo -e "${green}Mosdns下载成功!${end}" 
+     cd /tmp/mosdns
+     rm -rf /usr/bin/mosdns
+     unzip /tmp/mosdns/mosdns.zip  >> /dev/null 2>&1
+     mv mosdns /usr/bin/mosdns
+     chmod 777 /usr/bin/mosdns
+     webget /srv/mosdns/config.yaml "https://raw.githubusercontent.com/adhll/c-m/main/mosdns/config.yaml"  
+     echo -e "${green}config.yaml下载成功${end}"	     
+     webget /srv/mosdns/geoip.dat "https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geoip.dat"  
+     echo -e "${green}geoip.dat下载成功${end}"	
+     webget /srv/mosdns/geosite.dat "https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geosite.dat"
+     echo -e "${green}geosite.dat下载成功${end}"	     
+     rm -rf /tmp/mosdns
+     supervisor_mosdns_config
+     supervisorctl update >> /dev/null 2>&1
+     supervisorctl restart mosdns >> /dev/null 2>&1
+     echo -e "${green}Mosdns安装成功!${end}"
+}
+
+
+
+
+update_mosdns_y() {
+    getcpucore
+    getcpucore2
+        new_mosdns_ver=$(cat /srv/version  | grep mosdns_v | awk '{print $2}'| cut -d'-' -f1)
+        if [[ ! -n "$new_mosdns_ver" ]]; then
+        echo -e "${red}Mosdns检测版本失败!${end}"
+        exit 1
+        fi
+        if [ ! -d "/tmp/mosdns" ]; then
+        mkdir /tmp/mosdns
+        fi         
+        webget  /tmp/mosdns/mosdns.zip "https://raw.githubusercontent.com/adhll/c-m/main/mosdns/mosdns-linux-${cpucore2}.zip"
+        if [[ "$result" != "200" ]]; then
+        echo -e "${red}Mosdns下载失败!${end}"
+        exit 1
+        fi
+        echo -e "${green}Mosdns下载成功!${end}" 
+        cd /tmp/mosdns
+        rm -rf /usr/bin/mosdns
+        rm -rf /srv/mosdns/config.yaml
+        webget /srv/mosdns/config.yaml "https://raw.githubusercontent.com/adhll/c-m/main/mosdns/config.yaml"  
+        echo -e "${green}config.yaml下载成功${end}"	
+        unzip /tmp/mosdns/mosdns.zip  >> /dev/null 2>&1
+        mv mosdns /usr/bin/mosdns
+        chmod 777 /usr/bin/mosdns
+        rm -rf /tmp/mosdns
+        supervisorctl restart mosdns >> /dev/null 2>&1
+        echo -e "${green}Mosdns升级成功，请重新运行脚本!${end}" && exit 0
+
+}
+
+
+update_mosdns() {
+        new_mosdns_ver=$(cat /srv/version  | grep mosdns_v | awk '{print $2}'| cut -d'-' -f1)
+        now_mosdns_ver=$(mosdns -v | awk '{print $1}'| cut -d'-' -f1)
+	      if [[ "${now_mosdns_ver}" != "${new_mosdns_ver}" ]]  ;then
+	      echo -e "Mosdns已有新版本: ${new_mosdns_ver}，当前版本:${now_mosdns_ver}，开始安装"
+        if [[ ! -n "$new_mosdns_ver" ]]; then
+        echo -e "${red}Mosdns检测版本失败!${end}"
+        exit 1
+        fi
+        if [ ! -d "/tmp/mosdns" ]; then
+        mkdir /tmp/mosdns
+        fi         
+        webget  /tmp/mosdns/mosdns.zip "https://raw.githubusercontent.com/adhll/c-m/main/mosdns/mosdns-linux-${cpucore2}.zip"
+        if [[ "$result" != "200" ]]; then
+        echo -e "${red}Mosdns下载失败!${end}"
+        exit 1
+        fi
+        echo -e "${green}Mosdns下载成功!${end}" 
+        cd /tmp/mosdns
+        rm -rf /usr/bin/mosdns
+        rm -rf /srv/mosdns/config.yaml
+        webget /srv/mosdns/config.yaml "https://raw.githubusercontent.com/adhll/c-m/main/mosdns/config.yaml"  
+        echo -e "${green}config.yaml下载成功${end}"	
+        unzip /tmp/mosdns/mosdns.zip  >> /dev/null 2>&1
+        mv /tmp/mosdns/mosdns /usr/bin/mosdns
+        chmod 777 /usr/bin/mosdns
+        rm -rf /tmp/mosdns
+        supervisorctl restart mosdns >> /dev/null 2>&1
+        echo -e "${green}Mosdns升级成功，请重新运行脚本!${end}" && exit 0
+        fi
+
+}
+
+update_shell_y() {
+        webget  /tmp/clash_ui  https://raw.githubusercontent.com/adhll/c-m/main/clash_ui
+        if [[ "$result" != "200" ]]; then
+        echo -e "${red}Clash_UI下载失败!${end}"
+        exit 1
+        fi
+        echo -e "`date +%F\ %T` Clash_UI  下载成功!" >> /tmp/update.log  2>&1
+        rm -rf /usr/bin/clash_ui   
+        mv /tmp/clash_ui /usr/bin/clash_ui  >> /dev/null 2>&1
+        chmod +x /usr/bin/clash_ui >> /dev/null 2>&1
+        echo -e "${green}Clash_UI 强制升级成功，请重新运行脚本!${end}" && exit 0
+}
+
+update_shell() {
+	      new_shell_ver=$(cat /srv/version  | grep version | awk '{print $2}'| cut -d'-' -f1)
+	      if [[ "${sh_ver}" != "${new_shell_ver}" ]]  ;then
+	      echo -e "`date +%F\ %T` Clash_UI  最新版本: ${new_shell_ver}，当前版本:${sh_ver}"
+        webget /tmp/clash_ui https://raw.githubusercontent.com/adhll/c-m/main/clash_ui
+        if [[ "$result" != "200" ]]; then
+        echo -e "${red}Clash_UI下载失败!${end}"
+        exit 1
+        fi
+        echo -e "`date +%F\ %T` Clash_UI v${new_shell_ver} 下载成功!" >> /tmp/update.log  2>&1
+        rm -rf /usr/bin/clash_ui   
+        mv /tmp/clash_ui /usr/bin/clash_ui  >> /dev/null 2>&1
+        chmod +x /usr/bin/clash_ui >> /dev/null 2>&1
+        echo -e "${green}Clash_UI v${new_shell_ver}升级成功，请重新运行脚本!${end}" && exit 0
+        fi
+}
+
+install_nftables() {
+     if [ ! -d "/tmp/nftables" ]; then
+     mkdir /tmp/nftables
+     fi
+     mkdir -p /etc/nftables
+     webget /tmp/nftables/nftables.zip  https://raw.githubusercontent.com/adhll/c-m/main/nftables/nftables.zip >> /dev/null 2>&1
+     if [[ "$result" != "200" ]]; then
+     echo -e "${red}Nftables下载失败!${end}"
+     exit 1
+     fi
+     echo -e "${green}Nftables下载成功!${end}" 
+     cd /tmp/nftables
+     unzip nftables.zip >> /dev/null 2>&1
+     mv /tmp/nftables/nftables/chnroute.nft /etc/nftables/chnroute.nft
+     mv /tmp/nftables/nftables/private.nft /etc/nftables/private.nft
+     mv /tmp/nftables/nftables/nftables.conf /etc/nftables.conf
+     ip route replace default dev utun table 114  >> /dev/null 2>&1
+     ip rule del fwmark 114514 lookup 114  >> /dev/null 2>&1
+     ip rule add fwmark 114514 lookup 114 >> /dev/null 2>&1
+     sudo sh -c "nft flush ruleset && nft -f /etc/nftables.conf" >> /dev/null 2>&1
+     systemctl enable nftables.service >> /dev/null 2>&1
+     systemctl start nftables.service >> /dev/null 2>&1
+     rm -rf /tmp/nftables
+     echo -e "${green}Nftables安装成功!${end}"
+}
+
+
+install_cron() {
+cat << EOF > /var/spool/cron/crontabs/root
+*/5 * * * * clash_ui ping
+0 */6 * * * clash_ui update
+0 */3 * * * clash_ui check_ver
+EOF
+chmod 777 /var/spool/cron/crontabs/root
+crontab /var/spool/cron/crontabs/root
+/etc/init.d/cron restart  >> /dev/null 2>&1
+}
+
+check_ver() {
+       webget /srv/version https://raw.githubusercontent.com/adhll/c-m/main/version  >> /dev/null 2>&1
+	   if [[ "$result" != "200" ]]; then
+       webget /srv/version https://raw.githubusercontent.com/adhll/c-m/main/version  >> /dev/null 2>&1
+       fi
+}
+
+
+
+
+check_clash_status2() {
+pIDa=`lsof -i :9090|grep -v "PID" | awk '{print $2}'`
+if [ "$pIDa" = "" ];then
+   return 1
+else
+   return 0
+fi
+
+}
+check_ping_status() {
+ping -q -c5 ${gateway} >> /dev/null 2>&1
+if [ $? -eq 0 ];then
+   return 0
+else
+   return 1
+fi
+}
+
+ping_service() {
+check_clash_status2
+if [ $? -eq 0 ];then
+echo `date +%F\ %T`  "检测Clash端口正常" >> /dev/null 2>&1
+else
+echo `date +%F\ %T`  "检测Clash端口不正常，正在重启服务!" >>/tmp/ping.log
+clash_ui restart
+fi
+check_ping_status
+if [ $? -eq 0 ];then
+echo `date +%F\ %T`  "测试${gateway}网关正常" >> /dev/null 2>&1
+else
+echo `date +%F\ %T`  "测试${gateway}网关不正常，正在重启网络服务!" >>/tmp/ping.log
+/etc/init.d/networking restart
+clash_ui restart
+fi
+}
+
+
+
+dler_config() {
+    read -e -p "是否使用dler订阅? [Y/n] :" yn
+    [[ -z "${yn}" ]] && yn="y"
+    if [[ $yn == [Yy] ]]; then
+    read -e -p "请输入dler订阅TOKEN:" token
+    fi
+    if [ ! "$token" ];then
+    if [ ! -d "/srv/clash" ]; then
+    mkdir /srv/clash
+    fi    
+    mv /root/config.yaml /srv/clash/config.yaml     
+    else
+    if [ ! -d "/srv/clash" ]; then
+    mkdir /srv/clash
+    fi    
+    webget /srv/clash/config.yaml https://raw.githubusercontent.com/adhll/c-m/main/clash/config.yaml  >> /dev/null 2>&1
+    sed -i  's/'token'/'"${token}"'/g'  /srv/clash/config.yaml
+    sed -i  's/'eth_n'/'"${eth_n}"'/g'  /srv/clash/config.yaml
+    fi    
+}
+
+
+
+update_config () {
+    update_clash_config
+    update_mosdns_config
+    }
+
+update_clash_config () {
+    update_shell
+    echo -e "${green}更新clash配置!${end}"	 
+    token=$(cat /srv/clash/config.yaml |  awk '/'dler'/ {print substr($2,30,16)}' |head -n 1)
+    mv /srv/clash/config.yaml /tmp/clash_config.yaml.`date "+%Y.%m.%d.%H:%M"`
+    rm -rf /srv/clash/*.yaml
+    webget /srv/clash/Country.mmdb https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country.mmdb
+    webget /srv/clash/config.yaml https://raw.githubusercontent.com/adhll/c-m/main/clash/config.yaml  >> /dev/null 2>&1
+    sed -i  's/'token'/'"${token}"'/g'  /srv/clash/config.yaml
+    sed -i  's/'eth_n'/'"${eth_n}"'/g'  /srv/clash/config.yaml
+    clash_ui restart_clash
+   
+    }
+
+
+
+
+update_mosdns_config () {
+     update_shell
+     echo -e "${green}更新mosdns配置!${end}"	
+     mv /srv/mosdns/config.yaml /tmp/mosdns_config.yaml.`date "+%Y.%m.%d.%H:%M"`
+     webget /srv/mosdns/config.yaml "https://raw.githubusercontent.com/adhll/c-m/main/mosdns/config.yaml"  
+     echo -e "${green}config.yaml下载成功${end}"	     
+     webget /srv/mosdns/geoip.dat "https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geoip.dat"  
+     echo -e "${green}geoip.dat下载成功${end}"	
+     webget /srv/mosdns/geosite.dat "https://cdn.jsdelivr.net/gh/Loyalsoldier/v2ray-rules-dat@release/geosite.dat"
+     echo -e "${green}geosite.dat下载成功${end}"
+     clash_ui restart_mosdns
+    }
+
+
+install() {
+    getcpucore
+    getcpucore2
+    check_clash_status2    
+    if [[ $? == 0 ]]; then
+    echo -e "${green}Clash_UI已安装"
+    exit 1
+    else
+    echo "---------------------------------------"		
+    echo -e "${green}       Clash+Mosdns 一键安装"
+    echo -e "${green}按照提示输入IP,子网,网关"
+    echo -e "${green}dler订阅按照提示输入token"		
+    echo -e "${green}请将config.yaml配置文件上传到/root"	
+    check_disk_status
+    echo "---------------------------------------"
+    #update_shell
+    read -e -p "输入本机IP:" ip_add
+    read -e -p "输入子网码:" ip_mask
+    read -e -p "输入网关:" ip_gw
+    read -e -p "输入DNS:" ip_dns
+    dler_config
+    config_ip_dns
+    config_base
+    install_debian
+    install_clash
+    install_mosdns		
+    install_nftables
+    install_cron
+    echo "---------------------------------------"
+    echo -e "${green}       Clash+Mosdns 安装成功"
+    echo -e "${green}Clash配置文件：/srv/clash/config.yaml"
+    echo -e "${green}Clash控制面板:http://${ip_add}:9090/ui/"		
+    echo "---------------------------------------"
+    reboot_show_menu
+    fi  
+}
+
+getipv4(){
+	ipv4=$(wget -qO- -4 -t1 -T2 members.3322.org/dyndns/getip)
+	if [[ -z "${ipv4}" ]]; then
+		ipv4=$(wget -qO- -4 -t1 -T2 api.ip.sb/ip)
+		if [[ -z "${ipv4}" ]]; then
+			ipv4=$(wget -qO- -4 -t1 -T2 members.3322.org/dyndns/getip)
+			if [[ -z "${ipv4}" ]]; then
+				ipv4="IPv4_Error"
+			fi
+		fi
+	fi
+}
+
+get_IP_address(){
+	if [[ ! -z ${ipv4} ]]; then
+		for((integer_1 = ${user_IP_total}; integer_1 >= 1; integer_1--))
+		do
+			IP=$(echo "${ipv4}" |sed -n "$integer_1"p)
+			IP_address=$(wget -qO- -t1 -T2 http://freeapi.ipip.net/${ipv4}|sed 's/\"//g;s/,//g;s/\[//g;s/\]//g')
+			echo -e "${green}${ipv4} (${IP_address})"
+			sleep 1s
+		done
+	fi
+}
+
+
+before_show_menu() {
+    echo -n -e "${yellow}按回车返回主菜单:${end}" && read temp
+    show_menu
+}
+
+reboot_show_menu() {
+    echo -n -e "${yellow}按回车重启系统!${end}"  && read temp	
+    reboot          
+}
+
+
+
+restart_clash() {
+    supervisorctl restart clash >> /dev/null 2>&1
+    sleep 2
+    check_clash_status
+    if [[ $? == 0 ]]; then
+    echo -e "${green}Clash 重启成功!${end}"
+    else
+    echo -e "${red}重启失败!${end}"
+    fi
+    if [[ $# == 0 ]]; then
+    before_show_menu
+    fi
+}
+
+
+restart_mosdns() {
+    supervisorctl restart mosdns >> /dev/null 2>&1
+    sleep 2
+    check_mosdns_status
+    if [[ $? == 0 ]]; then
+    echo -e "${green}Mosdns 重启成功!${end}"
+    else
+    echo -e "${red}重启失败!${end}"
+    fi
+    if [[ $# == 0 ]]; then
+    before_show_menu
+    fi
+}
+
+
+status() {
+    supervisorctl status clash
+    if [[ $# == 0 ]]; then
+    before_show_menu
+    fi
+}
+
+
+
+show_status() {
+    show_clash_status
+    show_mosdns_status
+
+}
+
+restart_all() {
+    supervisorctl restart clash >> /dev/null 2>&1
+    supervisorctl restart mosdns >> /dev/null 2>&1
+    echo -e "${green}Clash+Mosdns 重启成功!${end}"
+}
+
+show_clash_status() {
+    check_clash_status
+    if [[ $? == 0 ]]; then
+    echo -e "${yellow} Clash 状态: ${green}已运行${end}"
+    else
+    echo -e "${yellow} Clash 状态: ${red}未运行${end}"
+    fi
+}
+
+check_clash_status() {
+    temp=$(supervisorctl status clash | awk '{print $2}' | cut -d "(" -f2 | cut -d ")" -f1)
+    if [[ x"${temp}" == x"RUNNING" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+check_install() {
+    check_clash_status2    
+    if [[ $? != 0 ]]; then
+    echo -e "${green}Clash_UI未安装，请先安装再使用Clash_UI!"
+    exit 1
+    fi
+}
+
+
+show_mosdns_status() {
+    check_mosdns_status
+    if [[ $? == 0 ]]; then
+    echo -e "${yellow}Mosdns 状态: ${green}已运行${end}"
+    else
+    echo -e "${yellow}Mosdns 状态: ${red}未运行${end}"
+    fi
+}
+check_mosdns_status() {
+    temp=$(supervisorctl status mosdns | awk '{print $2}' | cut -d "(" -f2 | cut -d ")" -f1)
+    if [[ x"${temp}" == x"RUNNING" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+check_disk_status() {
+   echo -e "${yellow}剩余空间:${end} $(df -h /srv | awk '{print $4}' | sed 1d )${yellow}    架构:${end} ${cpucore2}"
+
+}
+
+
+
+show_usage() {
+    echo -e "${blueb}Clash_UI 管理脚本 V${sh_ver} J. "
+    echo "-------------------------------------------------"
+    echo -e "${green}clash_ui                      - 显示管理菜单"
+    echo -e "${green}clash_ui v                    - 显示 Clash_UI 版本号"
+    echo -e "${green}clash_ui install              - 安装 Clash+Mosdns"    
+    echo -e "${green}clash_ui restart_clash        - 重启 Clash"
+    echo -e "${green}clash_ui restart_mosdns       - 重启 Mosdns"
+    echo -e "${green}clash_ui restart              - 重启 Clash+Mosdns"
+    echo -e "${green}clash_ui status               - 查看运行状态"
+    echo -e "${green}clash_ui logs                 - 查看 Clash 日志"    
+    echo -e "${green}clash_ui update_kernel        - 更新 Debian 内核"
+    echo -e "${green}clash_ui update_clash         - 更新 Clash"
+    echo -e "${green}clash_ui update_mosdns        - 更新 Mosdns"
+    echo -e "${green}clash_ui update_config        - 更新 Clash+Mosdns配置"
+    echo -e "${green}clash_ui update               - 更新 Clash_UI 管理脚本"
+    echo "-------------------------------------------------"
+}
+
+show_menu() {
+    echo -e "
+  ${lightblueb}Clash_UI ${yellow}管理脚本 J.${end}
+  ${green}q. ${redb}退出脚本${end}
+———————————————————————————
+  ${green}1. 重启 ${end}Clash
+  ${green}2. 重启 ${end}Mosdns
+  ${green}3. 重启 ${end}Clash+Mosdns
+———————————————————————————
+  ${green}4. 日志 ${end}Clash
+———————————————————————————
+  ${green}5. 更新 ${end}Clash_UI
+  ${green}6. 更新 ${end}Clash
+  ${green}7. 更新 ${end}Mosdns
+  ${green}8. 更新 ${end}Clash配置
+  ${green}9. 更新 ${end}Mosdns配置"
+    echo -e "———————————————————————————"
+    getipv4
+    getcpucore
+    getcpucore2
+    show_status
+    echo -e "———————————————————————————"
+    update_shell
+    update_clash
+    update_mosdns
+    check_disk_status
+    echo -e "${yellow}网络信息: ${end}${local_ip} > ${ipv4}"     
+    echo -e "   ${yellow}Clash: ${end}$(clash -v | awk '{print $2}') >  ${new_clash_ver}"
+    echo -e "  ${yellow}Mosdns: ${end}$(mosdns -v | awk '{print $1}'| cut -d'-' -f1)     >  ${new_mosdns_ver}"
+    echo -e "${yellow}Clash_UI: ${end}v${sh_ver}     >  v${new_shell_ver}" ${end}    
+    echo && read -p "请输入选择 [1-9]: " num
+
+    case "${num}" in
+        q) exit 1
+        ;;
+        1) restart_clash &&before_show_menu
+        ;;
+        2) restart_mosdns &&before_show_menu
+        ;;
+        3) restart_all &&before_show_menu   
+        ;;
+        4) tail -f /tmp/clash.log       
+        ;;
+        5) update_shell_y
+        ;;
+        6) update_clash_y
+        ;;                
+        7) update_mosdns_y
+        ;;                   
+        8) update_clash_config
+        ;;
+        9) update_mosdns_config
+        ;;                    
+        *) echo -e "${red}请输入正确的数字 [1-9]${end}" &&before_show_menu
+        ;;
+    esac
+}
+
+
+if [[ $# > 0 ]]; then
+    case $1 in
+        "update_clash") update_clash_y 0 
+        ;;
+        "update_mosdns") update_mosdns_y 0 
+        ;;
+        "restart_clash") restart_clash 0
+        ;;
+        "restart_mosdns") restart_mosdns 0
+        ;;
+        "restart") restart_all 0
+        ;;        
+        "logs") tail -f /tmp/clash.log 0
+        ;;   
+        "ping") ping_service 0
+        ;; 
+        "install") install 0
+        ;;
+        "install_ping") update_shell &&install_cron 0
+        ;;                  
+        "status") show_status 0
+        ;;
+        "check_ver") check_ver 0
+        ;;              
+        "update_clash_config") update_clash_config 0
+        ;;
+        "update_mosdns_config") update_mosdns_config 0
+        ;;
+        "update_config") update_config 0
+        ;;                   
+        "update") update_shell 0
+        ;;
+        "update_y") update_shell_y 0
+        ;;
+        "v") echo -e "${sh_ver}"
+        ;;                                    
+        *) show_usage
+        ;;
+    esac
+else
+    show_menu
+fi
