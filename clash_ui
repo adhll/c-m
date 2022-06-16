@@ -332,7 +332,7 @@ install_clash() {
      mv /tmp/clash/clash /usr/bin/clash
      chmod +x /usr/bin/clash
      setcap cap_net_bind_service=+ep /usr/bin/clash
-     webget  /tmp/dashboard.tar.gz  https://cdn.jsdelivr.net/gh/fjjonline/c-m@master/clash/dashboard.tar.gz
+     webget  /tmp/dashboard.tar.gz  https://raw.githubusercontent.com/adhll/c-m/main/clash/dashboard.tar.gz
      if [[ "$result" != "200" ]]; then
      echo -e "${red}UI下载失败!${end}"
      exit 1
@@ -362,7 +362,7 @@ update_clash_y() {
 	      if [ ! -d "/tmp/clash" ]; then
         mkdir /tmp/clash
         fi            
-        webget /tmp/clash/clash.gz "https://cdn.jsdelivr.net/gh/fjjonline/c-m@master/clash/clash-linux-${cpucore}-${new_clash_ver}.gz"
+	webget /tmp/clash/clash.gz "https://raw.githubusercontent.com/adhll/c-m/main/clash/clash-linux-${cpucore}-${new_clash_ver}.gz"
         if [["$result" != "200" ]]; then
         echo -e "${red}Clash下载失败!${end}"
         exit 1
