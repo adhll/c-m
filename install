@@ -35,12 +35,12 @@ webget(){
 }
     webget /srv/version https://raw.githubusercontent.com/adhll/c-m/main/version
 	if [[ "$result" != "200" ]]; then
-    webget /srv/version https://cdn.jsdelivr.net/gh/fjjonline/c-m@master/version
+    webget /srv/version https://raw.githubusercontent.com/adhll/c-m/main/version
     fi
 
-    webget /usr/bin/clash_ui https://raw.githubusercontent.com/fjjonline/c-m/main/clash_ui
+    webget /usr/bin/clash_ui https://raw.githubusercontent.com/adhll/c-m/main/clash_ui
 	if [[ "$result" != "200" ]]; then
-    webget /usr/bin/clash_ui https://cdn.jsdelivr.net/gh/fjjonline/c-m@master/clash_ui
+    webget /usr/bin/clash_ui https://raw.githubusercontent.com/adhll/c-m/main/clash_ui
     fi
 
     chmod +x /usr/bin/clash_ui >> /dev/null 2>&1
