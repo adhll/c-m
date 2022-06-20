@@ -878,6 +878,7 @@ show_usage() {
     echo -e "${green}clash_ui update_mosdns        - 更新 Mosdns"
     echo -e "${green}clash_ui update_config        - 更新 Clash+Mosdns配置"
     echo -e "${green}clash_ui update               - 更新 Clash_UI 管理脚本"
+    echo -e "${green}clash_ui check_ver            - 手动获取远程版本号"
     echo "-------------------------------------------------"
 }
 
