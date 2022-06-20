@@ -1,1 +1,481 @@
-1
+# > SU
+regexp:\/\/(www.)?taobao\.com\/ https://taobao.com/
+regexp:\/\/(www.)?jd\.com\/ https://www.jd.com/
+regexp:\/\/(www.)?mi\.com\/ https://www.mi.com/
+regexp:\/\/you\.163\.com\/ https://you.163.com/
+regexp:\/\/(www.)?suning\.com\/ https://suning.com/
+regexp:\/\/(www.)?yhd\.com\/ https://yhd.com/
+regexp:\/\/(www.)?ign\.xn--fiqs8s\/ http://cn.ign.com/ccpref/us
+regexp:\/\/(www.)?abbyychina\.com\/ https://www.abbyy.cn/
+regexp:\/\/(www.)?bartender\.cc\/ https://www.macbartender.com/
+regexp:\/\/(www.)?(betterzipcn|betterzip)\.(com|net)\/ https://macitbetter.com/
+regexp:\/\/(www.)?beyondcompare\.cc\/ https://www.scootersoftware.com/ 302
+regexp:\/\/(www.)?bingdianhuanyuan\.cn\/ https://www.faronics.com/zh-hans/products/deep-freeze
+regexp:\/\/(www.)?chemdraw\.com\.cn\/ https://www.perkinelmer.com.cn/
+regexp:\/\/(www.)?codesoftchina\.com\/ https://www.teklynx.com/
+regexp:\/\/(www.)?coreldrawchina\.com\/ https://www.coreldraw.com/cn/
+regexp:\/\/(www.)?crossoverchina\.com\/ https://www.codeweavers.com/
+regexp:\/\/(www.)?dongmansoft\.com\/ https://www.udongman.cn/
+regexp:\/\/(www.)?earmasterchina\.cn\/ https://www.earmaster.com/
+regexp:\/\/(www.)?easyrecoverychina\.com\/ https://www.ontrack.com/
+regexp:\/\/(www.)?ediuschina\.com\/ https://www.grassvalley.com/
+regexp:\/\/(www.)?flstudiochina\.com\/ https://www.image-line.com/
+regexp:\/\/(www.)?formysql\.com\/ https://www.navicat.com.cn/
+regexp:\/\/(www.)?guitarpro\.cc\/ https://www.guitar-pro.com/
+regexp:\/\/(www.)?huishenghuiying\.com\.cn\/ https://www.coreldraw.com/cn/
+regexp:\/\/hypersnap\.mairuan\.com\/ https://www.hyperionics.com/
+regexp:\/\/(www.)?iconworkshop\.cn\/ https://www.axialis.com/
+regexp:\/\/(www.)?imindmap\.cc\/ https://www.ayoa.com/previously-imindmap/
+regexp:\/\/(www.)?jihehuaban\.com\.cn\/ https://www.chartwellyorke.com/sketchpad/x24795.html
+regexp:\/\/hypersnap\.mairuan\.com\/ https://www.keyshot.com/
+regexp:\/\/(www.)?kingdeecn\.cn\/ http://www.kingdee.com/
+regexp:\/\/(www.)?logoshejishi\.com https://www.sothink.com/product/logo-design-software/
+regexp:\/\/logoshejishi\.mairuan\.com\/ https://www.sothink.com/product/logo-design-software/
+regexp:\/\/(www.)?luping\.net\.cn\/ https://www.techsmith.com/
+regexp:\/\/(www.)?mathtype\.cn\/ https://www.dessci.com/
+regexp:\/\/(www.)?mindmanager\.(cc|cn)\/ https://www.mindjet.com/cn/
+regexp:\/\/(www.)?mindmapper\.cc\/ https://www.mindmapper.com/
+regexp:\/\/(www.)?(mycleanmymac|xitongqingli)\.com\/ https://macpaw.com/
+regexp:\/\/(www.)?nicelabel\.cc\/ https://www.nicelabel.com/zh/ 302
+regexp:\/\/(www.)?ntfsformac\.cc\/ https://www.tuxera.com/products/tuxera-ntfs-for-mac-cn/
+regexp:\/\/(www.)?ntfsformac\.cn\/ https://china.paragon-software.com/home-mac/ntfs-for-mac/
+regexp:\/\/(www.)?overturechina\.com\/ https://sonicscores.com/
+regexp:\/\/(www.)?passwordrecovery\.cn\/ https://cn.elcomsoft.com/aopr.html
+regexp:\/\/(www.)?pdfexpert\.cc\/ https://pdfexpert.com/zh
+regexp:\/\/(www.)?photozoomchina\.com\/ https://www.benvista.com/
+regexp:\/\/(www.)?shankejingling\.com\/ https://www.sothink.com/product/flashdecompiler/
+regexp:\/\/cn\.ultraiso\.net\/ https://cn.ezbsystems.com/ultraiso/
+regexp:\/\/(www.)?vegaschina\.cn\/ https://www.vegascreativesoftware.com/
+regexp:\/\/(www.)?xshellcn\.com\/ https://www.netsarang.com/zh/xshell/
+regexp:\/\/(www.)?yuanchengxiezuo\.com\/ https://www.teamviewer.com/
+regexp:\/\/(www.)?zbrushcn.com/ https://pixologic.com/
+# > 21经济
+regexp:\/\/api\.21jingji\.com\/ad\/
+# > 55海淘
+regexp:\/\/appv6\.55haitao\.com\/IflyAd\/getAd
+# > 58同城
+regexp:\/\/.+?\.58cdn\.com\.cn\/brandads\/
+regexp:\/\/app\.58\.com\/api\/home\/invite\/popupAdv
+regexp:\/\/app\.58\.com\/api\/log\/
+# > 360doc
+regexp:\/\/mobi\.360doc\.com\/v\d{2}\/Ajax\/festival\.ashx\?op=getfestivaltheme
+# > AcFun
+regexp:\/\/aes\.acfun\.cn\/s\?adzones
+# > APICloud
+regexp:\/\/a\.apicloud\.com\/start_page\/
+# > 爱回收
+regexp:\/\/gw\.aihuishou\.com\/app-portal\/home\/getadvertisement
+# > 爱思助手
+regexp:\/\/list-app-m\.i4\.cn\/getopfstadinfo\.xhtml
+# > 阿里
+regexp:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.tmall\.wireless
+# >> 1688
+regexp:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alibaba\.advertisementservice\.getadv
+# >> 飞猪
+regexp:\/\/acs\.m\.taobao\.com\/gw\/mtop\.trip\.activity\.querytmsresources\/
+# >> 高德地图
+regexp:\/\/m\d\.amap\.com\/ws\/valueadded\/alimama\/splash_screen\/
+# >> 口碑
+regexp:\/\/render\.alipay\.com\/p\/s\/h5data\/prod\/spring-festival-2019-h5data\/popup-h5data\.json
+regexp:\/\/acs\.m\.taobao\.com\/gw\/mtop\.o2o\.ad\.gateway\.get\/
+# >> 淘宝
+regexp:\/\/gw\.alicdn\.com\/tfs\/.+?\d{4}-\d{4}\/[a-z]{3}$
+# >> 淘票票
+regexp:\/\/acs\.m\.taobao\.com\/gw\/mtop\.film\.mtopadvertiseapi\.queryadvertise\/
+# >> 天猫
+regexp:\/\/gw\.alicdn\.com\/tfs\/TB1.+?750-\d{4}
+# >> 优酷
+regexp:\/\/.+?\.mp4\?ccode=0902
+regexp:\/\/.+?\.mp4\?sid=
+regexp:\/\/vali\.cp31\.ott\.cibntv\.net\/youku\/.+?\.mp4\?sid=
+# >> 百度网盘
+regexp:\/\/pan\.baidu\.com\/rest\/2\.0\/pcs\/adx
+regexp:\/\/pan\.baidu\.com\/act\/api\/activityentry
+regexp:\/\/issuecdn\.baidupcs\.com\/issue\/netdisk\/guanggao\/
+# >> 百度贴吧
+regexp:\/\/c\.tieba\.baidu\.com\/c\/s\/splashSchedule
+regexp:\/\/c\.tieba\.baidu\.com\/c\/f\/forum\/getAdInfo
+# >> 百度地图
+regexp:\/\/ss0\.bdstatic\.com/.+?_\d{3}_\d{4}\.jpg
+# >> 爱奇艺
+regexp:\/\/iface\.iqiyi\.com\/api\/getNewAdInfo
+regexp:\/\/act\.vip\.iqiyi\.com\/interact\/api\/show\.do
+regexp:\/\/act\.vip\.iqiyi\.com\/interact\/api\/v2\/show
+# > 哔哩哔哩
+regexp:\/\/app\.bilibili\.com\/x\/v\d\/splash\/
+regexp:\/\/manga\.bilibili\.com\/twirp\/comic\.v\d\.Comic\/Flash
+# > 抱抱
+regexp:\/\/www\.myhug\.cn\/ad\/
+# > 百词斩
+regexp:\/\/7n\.bczcdn\.com\/launchad\/
+# > 贝太厨房
+regexp:\/\/channel\.beitaichufang\.com\/channel\/api\/v\d\/promote\/ios\/start\/page
+# > 币世界
+regexp:\/\/iapi\.bishijie\.com\/actopen\/advertising\/
+# > 贝壳找房
+regexp:\/\/app\.api\.ke\.com\/config\/config\/bootpage
+# > 薄荷
+regexp:\/\/status\.boohee\.com\/api\/v\d\/app_square\/start_up_with_ad
+# >> 手机知网
+regexp:\/\/xyz\.cnki\.net\/resourcev7\/api\/manualpush\/SlidsList$
+# > CNTV
+regexp:\/\/cntv\.hls\.cdn\.myqcloud\.com\/.+?\?maxbr=850
+regexp:\/\/asp\.cntv\.myalicdn\.com\/.+?\?maxbr=850
+regexp:\/\/www\.cntv\.cn\/nettv\/adp\/
+regexp:\/\/v\.cctv\.com\/.+?850
+# > CSDN
+regexp:\/\/gw\.csdn\.net\/cms-app\/v2\/home_page\/open_advertisement
+# > 车来了
+regexp:\/\/api\.chelaile\.net\.cn\/adpub\/
+regexp:\/\/api\.chelaile\.net\.cn\/goocity\/advert\/
+regexp:\/\/pic\d\.chelaile\.net\.cn\/adv\/
+# > 曹操出行
+regexp:\/\/cap\.caocaokeji\.cn\/advert-bss\/
+# > 超级课程表
+regexp:\/\/.+?\/V\d\/splash\/getSplashV\d\.action
+# > 超级星饭团
+regexp:\/\/g\.cdn\.pengpengla\.com\/starfantuan\/boot-screen-info\/
+# > 超星学习通
+regexp:\/\/learn\.chaoxing\.com\/apis\/service\/appConfig\?
+# > 豆瓣
+regexp:\/\/api\.douban\.com\/v\d\/app_ads\/
+# > 斗鱼
+regexp:\/\/rtbapi\.douyucdn\.cn\/japi\/sign\/app\/getinfo
+# > 当当
+regexp:\/\/mapi\.dangdang\.com\/index\.php\?action=init
+regexp:\/\/e\.dangdang\.com\/.+?getDeviceStartPage
+# > 蛋蛋赞
+regexp:\/\/www\.dandanzan\.com\/res\/gdsefse\.js
+# > 叨鱼
+regexp:\/\/daoyu\.sdo\.com\/api\/userCommon\/getAppStartAd
+# > 丁香医生
+regexp:\/\/dxy\.com\/app\/i\/ask\/biz\/feed\/launch
+# > 嘀嗒出行
+regexp:\/\/res\.xiaojukeji\.com\/resapi\/activity\/getPreloaded
+regexp:\/\/res\.xiaojukeji\.com\/resapi\/activity\/getPasMultiNotices
+regexp:\/\/www\.didapinche\.com\/app\/adstat\/
+# > 电视家
+regexp:\/\/api\.gaoqingdianshi\.com\/api\/v\d\/ad\/
+# > 毒
+regexp:\/\/app\.poizon\.com\/api\/v1\/app\/advertisement\/adv\/
+# > e代驾
+regexp:\/\/pic\.edaijia\.cn\/adsplash\/
+# > FOTOABLE
+regexp:\/\/cdn\.api\.fotoable\.com\/Advertise\/
+# > 飞客茶馆
+regexp:\/\/www\.flyertea\.com\/source\/plugin\/mobile\/mobile\.php\?module=advis
+# > 飞常准
+regexp:\/\/app\.variflight\.com\/ad\/
+regexp:\/\/app\.variflight\.com\/v\d\/advert\/
+# > 凤凰秀
+regexp:\/\/dsa-mfp\.fengshows\.cn\/mfp\/mfpMultipleDelivery\.do\?.+?adunitid
+# > Gofun
+regexp:\/\/gateway\.shouqiev\.com\/fsda\/app\/bootImage\.json
+# > 国泰君安
+regexp:\/\/dl\.app\.gtja\.com\/dzswem\/kvController\/.+?\.jpg$
+# > 杭州公交
+regexp:\/\/m\.ibuscloud\.com\/v2\/app\/getStartPage
+# > 杭州市·市民卡
+regexp:\/\/smkmp\.96225\.com\/smkcenter\/ad\/
+# > 虎牙
+regexp:\/\/business\.msstatic\.com\/advertiser\/
+regexp:\/\/cdnfile1\.msstatic\.com\/cdnfile\/appad\/resource
+# > 华住会
+regexp:\/\/appapi\.huazhu\.com:\d{4}\/client\/app\/getAppStartPage\/
+# > 韩剧社
+regexp:\/\/47\.97\.20\.12\/ad\/
+# > 火猫
+regexp:\/\/api\.huomao\.com\/channels\/loginAd
+# > HiveBox
+regexp:\/\/consumer\.fcbox\.com\/v\d\/ad\/
+# > 好好住
+regexp:\/\/api\.haohaozhu\.cn\/index\.php\/home\/AppInit\/getStartPhoto
+# > 讯飞
+regexp:\/\/imeclient\.openspeech\.cn\/adservice\/
+# > 好体知
+regexp:\/\/www\.bodivis\.com\.cn\/app\/splashAdvertise
+# > 京东
+regexp:\/\/api\.m\.jd\.com\/client\.action\?functionId=start$
+regexp:\/\/b?dsp-x\.jd\.com\/adx\/
+regexp:\/\/ms\.jr\.jd\.com\/gw\/generic\/base\/na\/m\/adInfo
+regexp:\/\/ms\.jr\.jd\.com\/gw\/generic\/aladdin\/na\/m\/getLoadingPicture
+# > 界面新闻
+regexp:\/\/img\.jiemian\.com\/ads\/
+# > 驾校一点通
+regexp:\/\/api\.jxedt\.com\/ad\/
+regexp:\/\/richmanapi\.jxedt\.com\/api\/ad\/
+# > 驾考宝典
+regexp:\/\/.+?\.kakamobi\.cn\/api\/open\/v\d\/advert-sdk\/
+# > 金山 WPS
+regexp:\/\/ios\.wps\.cn\/ad-statistics-service
+regexp:\/\/mobile-pic\.cache\.iciba\.com\/feeds_ad\/
+regexp:\/\/\w+?\.kingsoft-office-service\.com\/ad
+# > 金山词霸
+regexp:\/\/service\.iciba\.com\/popo\/open\/screens\/v\d\?adjson
+# > Keep
+regexp:\/\/api\.gotokeep\.com\/ads
+regexp:\/\/static1\.keepcdn\.com\/.+?\d{3}x\d{4}
+# > 快递100
+regexp:\/\/p\.kuaidi100\.com\/mobile\/mobileapi\.do
+# > 酷我
+regexp:\/\/(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\/MobileAdServer\/
+regexp:\/\/(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\/EcomResourceServer\/AdPlayPage\/adinfo
+# > 看理想
+regexp:\/\/api\.vistopia\.com\.cn\/api\/v\d\/home\/advertisement
+# > 乐视
+regexp:\/\/.+?\/letv-gug\/
+# > 来疯直播
+regexp:\/\/api\.laifeng\.com\/v\d\/start\/ads
+# > 懒投资
+regexp:\/\/ios\.lantouzi\.com\/api\/startpage
+# > 旅法师营地
+regexp:\/\/www\.iyingdi\.cn\/ad
+# > 小米
+regexp:\/\/api\.m\.mi\.com\/v\d\/app\/start
+regexp:\/\/api\.jr\.mi\.com\/v\d\/adv\/
+regexp:\/\/api\.jr\.mi\.com\/jr\/api\/playScreen
+regexp:\/\/api-mifit.+?\.huami\.com\/discovery\/mi\/discovery\/.+?_ad\?
+# > 蘑菇租房
+regexp:\/\/api\.mgzf\.com\/renter-operation\/home\/startHomePage
+# > 漫画人
+regexp:\/\/mangaapi\.manhuaren\.com\/v\d\/public\/getStartPageAds
+# > 美团
+regexp:\/\/p\d\.meituan\.net\/wmbanner\/[A-Za-z0-9]+?\.jpg
+regexp:\/\/p\d\.meituan\.net\/movie\/[A-Za-z0-9]+?\.jpg\?may_covertWebp
+# > 秒拍
+regexp:\/\/b-api\.ins\.miaopai\.com\/\d\/ad/
+# > 马蜂窝
+regexp:\/\/mapi\.mafengwo\.cn\/ad\/
+regexp:\/\/mapi\.mafengwo\.cn\/travelguide\/ad\/
+# > 买单吧
+regexp:\/\/creditcardapp\.bankcomm\.com\/mapp\/common\/queryGuidePageAds\.do$
+regexp:\/\/creditcardapp\.bankcomm\.com\/mapp\/common\/getPopAds\.do$
+# > 美篇
+regexp:\/\/api\.meipian\.me.+?advert
+# > 爱南宁
+regexp:\/\/nnapp\.cloudbae\.cn\/mc\/api\/advert
+# > NationalGeographic
+regexp:\/\/dili\.bdatu\.com\/jiekou\/ad\/
+# > NationalGeographicChina
+regexp:\/\/wap\.ngchina\.cn\/news\/adverts\/
+# > ofo
+regexp:\/\/supportda\.ofo\.com\/adaction\?
+regexp:\/\/ma\.ofo\.com\/ads\/
+regexp:\/\/activity2\.api\.ofo\.com\/ofo\/Api\/v2\/ads
+regexp:\/\/ma\.ofo\.com\/adImage\/
+# > Oray
+regexp:\/\/slapi\.oray\.net\/client\/ad
+# > PU口袋校园
+regexp:\/\/pocketuni\.net\/\?app=api&mod=Message&act=ad
+# > 票根
+regexp:\/\/pss\.txffp\.com\/piaogen\/images\/launchScreen
+# > 拼多多
+regexp:\/\/api\.yangkeduo\.com\/api\/cappuccino\/splash
+# > Qdaily
+regexp:\/\/app\d\.qdaily\.com\/app\d\/boot_advertisements\.json
+regexp:\/\/notch\.qdaily\.com\/api\/v\d\/boot_ad
+# > 穷游
+regexp:\/\/open\.qyer\.com\/qyer\/startpage\/
+regexp:\/\/open\.qyer\.com\/qyer\/config\/get
+regexp:\/\/media\.qyer\.com\/ad\/
+# > 亲宝宝
+regexp:\/\/api\.qbb6\.com\/ad\/
+# > 人人视频
+regexp:\/\/msspjh\.emarbox\.com\/getAdConfig
+regexp:\/\/api\.videozhishi\.com\/api\/getAdvertising
+regexp:\/\/api\.rr\.tv\/ad\/
+# > 日日煮
+regexp:\/\/api\.daydaycook\.com\.cn\/daydaycook\/server\/ad\/
+regexp:\/\/cms\.daydaycook\.com\.cn\/api\/cms\/advertisement\/
+# > 扫描全能王
+regexp:\/\/api\.intsig\.net\/user\/cs\/operating\/app\/get_startpic\/
+# > 什么值得买
+regexp:\/\/api\.smzdm\.com\/v\d\/util\/loading
+regexp:\/\/app-api\.smzdm\.com\/util\/loading
+regexp:\/\/s\d\.zdmimg\.com\/www\/api\/v\d\/api\/thirdAd\.php
+# > 神舟专车
+regexp:\/\/img01\.10101111cdn\.com\/adpos\/
+# > 省点
+regexp:\/\/api\.waitwaitpay\.com\/\/api\/splash
+# > 识货
+regexp:\/\/www\.shihuo\.cn\/app\d\/saveAppInfo
+# > 首汽约车
+regexp:\/\/gw-passenger\.01zhuanche\.com\/gw-passenger\/car-rest\/webservice\/passenger\/recommendADs
+regexp:\/\/gw-passenger\.01zhuanche\.com\/gw-passenger\/zhuanche-passenger-token\/leachtoken\/webservice\/homepage\/queryADs
+# > 顺丰速运
+regexp:\/\/ccsp-egmas\.sf-express\.com\/cx-app-base\/base\/app\/ad\/queryAdImages
+# > 肆客足球
+regexp:\/\/api\.qiuduoduo\.cn\/guideimage
+# > 搜狗
+regexp:\/\/business-cdn\.shouji\.sogou\.com\/wapdl\/hole\/.+?\.jpg
+# > 搜狐
+regexp:\/\/api\.k\.sohu\.com\/api\/news\/adsense
+regexp:\/\/pic\.k\.sohu\.com\/img8\/wb\/tj\/
+regexp:\/\/s1\.api\.tv\.itc\.cn\/v4\/mobile\/control\/switch\.json
+regexp:\/\/api\.tv\.sohu\.com\/agg\/api\/app\/config\/bootstrap
+# > 苏宁
+regexp:\/\/image\.suning\.cn\/uimg\/ma\/ad\/
+# >> 富途牛牛
+regexp:\/\/api\d\.futunn\.com\/ad\/
+# >> 腾讯游戏
+regexp:\/\/ssl\.kohsocialapp\.qq\.com:10001\/game\/buttons
+regexp:\/\/qt\.qq\.com\/lua\/mengyou\/get_splash_screen_info
+# >> 腾讯地图
+regexp:\/\/3gimg\.qq\.com\/tencentMapTouch\/app\/activity\/
+regexp:\/\/3gimg\.qq\.com\/tencentMapTouch\/splash\/
+regexp:\/\/4gimg\.map\.qq\.com\/mwaSplash\/
+# >> 腾讯视频
+regexp:\/\/vv\.video\.qq\.com\/getvmind\?
+regexp:\/\/(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\/.+?\.tc\.qq\.com\/.+?p201\.1\.mp4\?
+# >> 腾讯体育
+regexp:\/\/news\.ssp\.qq\.com\/app
+# > 澎湃新闻
+regexp:\/\/adpai\.thepaper\.cn\/.+?&ad=
+# > 太平洋
+regexp:\/\/agent-count\.pconline\.com\.cn\/counter\/adAnalyse\/
+regexp:\/\/mrobot\.pconline\.com\.cn\/v\d\/ad2p
+regexp:\/\/mrobot\.pconline\.com\.cn\/s\/onlineinfo\/ad\/
+regexp:\/\/mrobot\.pcauto\.com\.cn\/v\d\/ad2p
+regexp:\/\/mrobot\.pcauto\.com\.cn\/xsp\/s\/auto\/info\/preload\.xsp
+# > 途牛
+regexp:\/\/m\.tuniu\.com\/api\/operation\/splash\/
+# > VUE
+regexp:\/\/static\.vuevideo\.net\/styleAssets\/.+?\/splash_ad
+regexp:\/\/static\.vuevideo\.net\/styleAssets\/advertisement\/
+# >> 网易邮箱
+regexp:\/\/appconf\.mail\.163\.com\/mmad\/
+# >> 网易新闻
+regexp:\/\/c\.m\.163\.com\/nc\/gl\/
+# >> 网易有钱
+regexp:\/\/client\.mail\.163\.com\/apptrack\/confinfo\/searchMultiAds
+# >> 网易严选
+regexp:\/\/support\.you\.163\.com\/xhr\/boot\/getBootMedia\.json
+# >> 网易蜗牛读书
+regexp:\/\/easyreadfs\.nosdn\.127\.net\/ad-material\/
+regexp:\/\/p\.du\.163\.com\/ad\/
+# >> 有道词典
+regexp:\/\/oimage[a-z][0-9]\.ydstatic\.com\/.+?adpublish
+regexp:\/\/dsp-impr2\.youdao\.com\/adload
+# > 微医
+regexp:\/\/app\.wy\.guahao\.com\/json\/white\/dayquestion\/getpopad
+# > Weico
+regexp:\/\/overseas\.weico\.cc\/portal\.php\?a=get_coopen_ads
+# > 无他相机
+regexp:\/\/api-release\.wuta-cam\.com\/ad_tree
+regexp:\/\/res-release\.wuta-cam\.com\/json\/ads_component_cache\.json
+# > 蜗牛睡眠
+regexp:\/\/snailsleep\.net\/snail\/v\d\/screen\/qn\/get\?
+regexp:\/\/snailsleep\.net\/snail\/v\d\/adTask\/
+# > WiFi共享大师
+regexp:\/\/nochange\.ggsafe\.com\/ad\/
+# > 微店
+regexp:\/\/thor\.weidian\.com\/ares\/home\.splash\/
+# > 华尔街见闻
+regexp:\/\/api\.wallstreetcn\.com\/apiv\d\/advertising\/
+# > 新浪
+regexp:\/\/edit\.sinaapp\.com\/ua\?t=adv
+# >> 新浪微博
+regexp:\/\/wbapp\.uve\.weibo\.com\/wbapplua\/wbpullad\.lua
+regexp:\/\/weibointl\.api\.weibo\.cn\/portal\.php\?a=get_coopen_ads
+# >> 新浪天气通
+regexp:\/\/tqt\.weibo\.cn\/overall\/redirect\.php\?r=tqt
+regexp:\/\/tqt\.weibo\.cn\/.+?advert\.index
+regexp:\/\/tqt\.weibo\.cn\/api\/advert\/
+# > 下厨房
+regexp:\/\/api\.xiachufang\.com\/v\d\/ad\/
+# > 虾米
+regexp:\/\/acs\.m\.taobao\.com\/gw\/mtop\.alimusic\.common\.mobileservice\.startinit\/
+# > 小睡眠
+regexp:\/\/api\.psy-1\.com\/cosleep\/startup
+# > 小猿搜题
+regexp:\/\/xyst\.yuanfudao\.com\/iphone\/splashesV\d
+# > 新片场
+regexp:\/\/app\.xinpianchang\.com\/open_screen\?
+# > 雪球
+regexp:\/\/101\.201\.175\.228\/ads\/display
+regexp:\/\/api\.xueqiu\.com\/ads\/display
+# > 迅游加速器
+regexp:\/\/portal-xunyou\.qingcdn\.com\/api\/v\d\/ios\/ads\/
+# > 喜马拉雅
+regexp:\/\/\w+?\.ximalaya\.com\/api\/v\d\/adRealTime
+regexp:\/\/(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\/ting\/preload\/
+regexp:\/\/portal-xunyou\.qingcdn\.com\/api\/v\d\/ios\/ads\/
+# > 小站
+regexp:\/\/tiku\.zhan\.com\/Common\/newAd\/
+# > Yahoo!
+regexp:\/\/m\.yap\.yahoo\.com\/v\d{2}\/getAds\.do
+# > 萤石云视频
+regexp:\/\/i\.ys7\.com\/api\/ads
+# > 阅达教育
+regexp:\/\/www\.hxeduonline\.com\/mobileapi2\/index\.php\?act=index&op=interdict
+# > 运动世界
+regexp:\/\/.+?\.iydsj\.com\/api\/.+?\/ad
+# > 一点万象
+regexp:\/\/app\.mixcapp\.com\/mixc\/api\/v\d\/ad
+# > 印象笔记
+regexp:\/\/app\.yinxiang\.com\/ads\/
+# > 云麦好轻
+regexp:\/\/restapi\.iyunmai\.com\/api\/ios\/ad\/
+# > 育学园
+regexp:\/\/yxyapi\d\.drcuiyutao\.com\/yxy-api-gateway\/api\/json\/advert\/
+# > 迅雷
+regexp:\/\/images\.client\.vip\.xunlei\.com\/.+?\/advert\/
+# > 讯飞
+regexp:\/\/imeclient\.openspeech\.cn\/adservice\/
+# > 转转
+regexp:\/\/app\.zhuanzhuan\.com\/zzx\/transfer\/getConfigInfo$
+# > 直播吧
+regexp:\/\/a\.qiumibao\.com\/activities\/config\.php
+regexp:\/\/.+?\/allOne\.php\?ad_name
+# > 知乎
+regexp:\/\/api\.zhihu\.com\/fringe\/ad
+regexp:\/\/www\.zhihu\.com\/api\/v4\/community-ad
+# > 追书神器
+regexp:\/\/api\.zhuishushenqi\.com\/splashes\/ios
+regexp:\/\/api\.zhuishushenqi\.com\/notification\/shelfMessage
+regexp:\/\/api\.zhuishushenqi\.com\/user\/bookshelf-updated
+regexp:\/\/itunes\.apple\.com\/lookup\?id=575826903
+# > 作业帮
+regexp:\/\/www\.zybang\.com\/adx\/
+# > 最右
+regexp:\/\/api\.izuiyou\.com\/ad\/
+# > 字节跳动
+regexp:\/\/.+?\.pstatp\.com\/img\/ad
+regexp:\/\/dsp\.toutiao\.com\/api\/xunfei\/ads\/
+regexp:\/\/.+?\.snssdk\.com\/motor\/operation\/activity\/display\/config\/V2\/
+regexp:\/\/.+?\/img\/ad\.union\.api\/
+# > 涨乐财富通
+regexp:\/\/d\.zhangle\.com\/pic\/cft\/interaction\/\d{13}-1242-2248\.jpg
+# > 中国大学慕课
+regexp:\/\/www\.icourse163\.org\/mob\/j\/v1\/mobRecommendRPCBean\.getMaxWeightAdvertisement\.rpc
+# > 中国银行
+regexp:\/\/mlife\.jf365\.boc\.cn\/AppPrj\/FirstPic\.do\?
+# > 中国工商银行
+regexp:\/\/v\.icbc\.com\.cn\/userfiles\/Resources\/WAP\/advertisement\/
+# > 中国招商银行
+regexp:\/\/pic1cdn\.cmbchina\.com\/appinitads\/
+# > 中国民生银行
+regexp:\/\/www\.cmbc\.com\.cn\/m\/image\/loadingpage\/
+# > 中国广发银行
+regexp:\/\/mps\.95508\.com\/mps\/club\/cardPortals\/adv\/.{25}\.jpg
+# >> 中国移动
+regexp:\/\/clientaccess\.10086\.cn\/biz-orange\/DN\/init\/startInit
+# >> 江苏
+regexp:\/\/wap\.js\.10086\.cn\/jsmccClient\/cd\/market_content\/api\/v\d\/market_content\.page\.query
+# >> 咪咕
+regexp:\/\/gg\w+?\.cmvideo\.cn\/v\d\/iflyad\/
+regexp:\/\/ggic\d?\.cmvideo\.cn\/ad\/
+regexp:\/\/ggx\.cmvideo\.cn\/request\/
+regexp:\/\/.+?\/cdn-adn\/
+# > 中国联通
+regexp:\/\/m\.client\.10010\.com\/mobileService\/customer\/accountListData\.htm
+regexp:\/\/m\.client\.10010\.com\/uniAdmsInterface\/getWelcomeAd
+# > 掌阅
+regexp:\/\/ih2\.ireader\.com\/zyapi\/bookstore\/ad\/
+regexp:\/\/ih2\.ireader\.com\/zyapi\/self\/screen\/ad
+regexp:\/\/ih2\.ireader\.com\/zycl\/api\/ad\/
+# > 荟聚动漫
+regexp:\/\/api-access\.pangolin-sdk-toutiao\.com\/api\/ad\/
+regexp:\/\/sf\d-ttcdn-tos\.pstatp\.com\/obj\/ad
+regexp:\/\/www\.51devapp\.com\/adconfigs
+regexp:\/\/.+?\.snssdk\.com\/ad\/
