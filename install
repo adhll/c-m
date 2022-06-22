@@ -12,6 +12,7 @@ yellow='\033[0;33m'
 plain='\033[0m'
 
 echo "199.232.68.133 raw.githubusercontent.com" >> /etc/hosts
+sudo apt update && sudo apt install supervisor
 
 webget(){
 	#参数【$1】代表下载目录，【$2】代表在线地址
