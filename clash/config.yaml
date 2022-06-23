@@ -1,21 +1,21 @@
 # 系统参数
-port: 7890                                        # HTTP代理端口
-socks-port: 7891                                  # SOCKS代理端口
-redir-port: 7892                                  # 透明代理端口（for Linux or MacOS）不能更改
-mixed-port: 7893                                  # 集成端口，http与socks
-#authentication:                                  # 验证
-#  - "usr:usr"                                # http与socks的账号跟密码，推荐使用
-allow-lan: true                                   # 允许局域网连接
-mode: Script                                      # Rule or Script    # 工作模式（有Global全局，Rule规则，Direct直连,Script脚本）
-log-level: info                                   # 日志级别（info / warning / error / debug / silent）
-ipv6: false                                       # 假
-external-controller: 0.0.0.0:9090                 # 外部控制面板监听端口
-external-ui: dashboard                            # 外部控制面板仪表板
-secret: ""                                   # dashboard面板的密码，同时也是tracing的密码
-interface-name: eth_n                              # ip a 查看接口名称，确认一致 
-profile:                                          # 描述
-  store-selected: true                            # 策略组选择缓存开关，打开后可以保存策略组选择，重启不会回复默认
-  tracing: true                                   # tracing开关，必须打开才能对接tracing
+port: 7890                        # HTTP代理端口
+socks-port: 7891                  # SOCKS代理端口
+redir-port: 7892                  # 透明代理端口（for Linux or MacOS）不能更改
+mixed-port: 7893                  # 集成端口，http与socks
+#authentication:                   # 验证
+#  - "yg777:yg777"                 # http与socks的账号跟密码，推荐使用
+allow-lan: true                   # 允许局域网连接
+mode: Script                      # Rule or Script    # 工作模式（有Global全局，Rule规则，Direct直连,Script脚本）
+log-level: info                   # 日志级别（info / warning / error / debug / silent）
+ipv6: false                       # 假
+external-controller: 0.0.0.0:9090 # 外部控制面板监听端口
+external-ui: dashboard            # 外部控制面板仪表板
+secret: "admin"                   # dashboard面板的密码，同时也是tracing的密码
+interface-name: enp2s0            # ip a 查看接口名称，确认一致 
+profile:                          # 描述
+  store-selected: true            # 策略组选择缓存开关，打开后可以保存策略组选择，重启不会回复默认
+  tracing: true                   # tracing开关，必须打开才能对接tracing
 
 # 实验性功能
 experimental:
@@ -35,19 +35,18 @@ tun:
 dns:
   enable: true
   ipv6: false
-  listen: 127.0.0.1:5352                          # DNS监听端口!!!clash下，此处不能改，切记!!!!
+  listen: 0.0.0.0:5352         # DNS监听端口！！！clash下，此处不能改，切记！！！！
   # DNS解析模式（redir-host # or fake-ip），这里重点解释一下：
   # redir-host为真实IP模式，需要设置nameserver（国内）和fallback（国外）两组DNS，当设备发起DNS请求，CLASH会同时向两组里面所有服务器发起请求，然后首先拿nameserver中最快返回的结果去匹配规则，使用GEOIP判断此IP的所属区域，如果属于国内（CN）或保留地址则直接响应给客户端，其他情况则把fallback中的结果响应给客户端
   # fake-ip则相反，当clash收到请求，会直接返回一个198.18.0.1/16的假IP给设备，同时 Clash 继续解析域名规则和 IP 规则，而且如果 Clash DNS 匹配到了域名规则、则不需要向上游 DNS 请求，Clash 已经可以直接将连接发给代理服务器，节省了 Clash DNS 向上游 DNS 请求解析
   default-nameserver:
     - 223.5.5.5
-    - 223.6.6.6
-    - 8.8.8.8
-    - 8.8.4.4
-  enhanced-mode: fake-ip                          # 理论上来说，fake-ip具有更好的响应速度跟抗污染能力（主要还得看规则）。由于灯塔提前分流了国内外流量，国内流量不经过clash，所以选择fake-ip可以得到更好的效果，当然，还是得看规则完不完整。有需要返回真实IP的可以选择redir-host，老实说两种DNS模式在实际体验中差别不大
-  fake-ip-range: 198.19.0.1/16                    # ip范围
-  use-hosts: true                                 # 开启
-  fake-ip-filter:                                 # fake-ip白名单，对于有需要返回真实IP又想用fake-ip的，可参照以下格式把域名加进去
+    - 119.29.29.29
+    - 114.114.114.114
+  enhanced-mode: fake-ip         # 理论上来说，fake-ip具有更好的响应速度跟抗污染能力（主要还得看规则）。由于灯塔提前分流了国内外流量，国内流量不经过clash，所以选择fake-ip可以得到更好的效果，当然，还是得看规则完不完整。有需要返回真实IP的可以选择redir-host，老实说两种DNS模式在实际体验中差别不大
+  fake-ip-range: 198.18.0.1/16   # ip范围
+  use-hosts: true                # 开启
+  fake-ip-filter:                # fake-ip白名单，对于有需要返回真实IP又想用fake-ip的，可参照以下格式把域名加进去
     - msftconnecttest.com
     - "*.msftconnecttest.com"
     - msftncsi.com
@@ -58,7 +57,7 @@ dns:
     - '.stun.playstation.net'   
     - 'xbox.*.microsoft.com'    
     - '.xboxlive.com'
-  nameserver:                                     # DNS服务器（国内），此处建议只填一个速度最快的DNS就可以了
+  nameserver:                    # DNS服务器（国内），此处建议只填一个速度最快的DNS就可以了                                   # DNS服务器（国内），此处建议只填一个速度最快的DNS就可以了
     - 119.29.29.29
     - 119.28.28.28
     - 223.5.5.5
@@ -69,252 +68,296 @@ dns:
 # 以下就是代理，代理集（需机场支持），策略组设置。请自己观察，注意之间的对应关系!
 # 代理集设置    
 proxy-providers:
-  🇯🇵 日本 JP:                                      # 代理集名称
-    type: http                                    # 代理集类型，有http（网络地址）跟file（本地）两种格式
-    path: ./JP.yaml                               # 代理集本地路径
-    url: https://dler.cloud/subscribe/token?protocols=ss&list=clash&area=jp&match=hc|iepl
-    interval: 28800                               # 自动检测时间，单位为秒，意思就是每28800秒更新一次
-    health-check:                                 # 状态检测
-      enable: true                                # 开启
-      url: http://cp.cloudflare.com/generate_204  # 检测地址，每600秒代理集里面的节点向检测地址做一次连通性测试
-      interval: 300                               # 自动检测时间，单位为秒     
-  🇸🇬 狮城 SG:
+  🇭🇰 香港-IEPL:
     type: http
-    path: ./SG.yaml
-    url: https://dler.cloud/subscribe/token?protocols=ss&list=clash&area=sg&match=hc|iepl
+    path: "./proxy_provider/IEPL-HK.yaml"
+    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=hk&match=IEPL|Lite|Premium
+    interval: 28800
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 600
+  🇭🇰 香港-AC:
+    type: http
+    path: "./proxy_provider/AC-HK.yaml"
+    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=hk&match=AC&hijack=true
     interval: 28800
     health-check:
       enable: true
       url: http://cp.cloudflare.com/generate_204
       interval: 300
-  🇸🇬 狮城 HC:
+  🇨🇳 台湾-TW:
     type: http
-    path: ./HC.yaml
-    url: https://dler.cloud/subscribe/token?protocols=ss&list=clash&area=sg&match=hc
-    interval: 28800              
+    path: "./proxy_provider/TW.yaml"
+    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=tw&match=CHT|HINET|SEET|Lite|AC
+    interval: 28800
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 600       
+  🇸🇬 新加坡-SG:
+    type: http
+    path: "./proxy_provider/SG.yaml"
+    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=sg&match=IEPL|AC|Lite|aliyun|Premium
+    interval: 28800
     health-check:
       enable: true
       url: http://cp.cloudflare.com/generate_204
-      interval: 300                    
-  🇭🇰 香港 HK:                                      # 代理集名称
-    type: http                                    # 代理集类型，有http（网络地址）跟file（本地）两种格式
-    path: ./HK.yaml                               # 代理集本地路径、
-    url: https://dler.cloud/subscribe/token?protocols=ss&list=clash&area=hk&match=hc|bgp
-    interval: 28800                               # 自动检测时间，单位为秒，意思就是每28800秒更新一次
-    health-check:                                 # 状态检测
-      enable: true                                # 开启
-      url: http://cp.cloudflare.com/generate_204  # 检测地址，每600秒代理集里面的节点向检测地址做一次连通性测试
-      interval: 300     
-  🇭🇰 香港 IEPL:                                      # 代理集名称
-    type: http                                    # 代理集类型，有http（网络地址）跟file（本地）两种格式
-    path: ./HK.yaml                               # 代理集本地路径
-    url: https://dler.cloud/subscribe/token?protocols=ss&list=clash&area=hk&match=iepl
-    interval: 28800                               # 自动检测时间，单位为秒，意思就是每28800秒更新一次
-    health-check:                                 # 状态检测
-      enable: true                                # 开启
-      url: http://cp.cloudflare.com/generate_204  # 检测地址，每600秒代理集里面的节点向检测地址做一次连通性测试
-      interval: 300                                 # 自动检测时间，单位为秒    
-  🌏 全球 QQ:
+      interval: 300      
+  🇯🇵 日本-JP:
     type: http
-    path: ./QQ.yaml
-    url: https://dler.cloud/subscribe/token?protocols=ss&list=clash&match=hkt|5G|ha|wtt|cht|HINET
-    interval: 28800                               # 自动检测时间，单位为秒，意思就是每28800秒更新一次    
+    path: "./proxy_provider/JP.yaml"
+    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=jp&match=AC|Lite|KDDI|HA
+    interval: 28800
     health-check:
       enable: true
       url: http://cp.cloudflare.com/generate_204
-      interval: 300           
+      interval: 300
+  🇺🇸 美国-US:
+    type: http
+    path: "./proxy_provider/US.yaml"
+    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=us&match=AC|Lite|DMIT
+    interval: 28800
+    health-check:
+      enable: true
+      url: http://cp.cloudflare.com/generate_204
+      interval: 300
 
-# 策略组
 proxy-groups:
-  - name: 💬 即时通讯
-    type: select
-    proxies:
-      - 🇭🇰 香港 HK
-      - 🇭🇰 香港 IEPL
-      - 🇯🇵 日本 JP
-      - 🇸🇬 狮城 SG  
-      - 🇸🇬 狮城 HC
-      - 🌏 全球 QQ
-      - 🤟 手动选择
-  - name: 🎦 Netflix
-    type: select
-    proxies:
-      - 🇭🇰 香港 HK
-      - 🇭🇰 香港 IEPL
-      - 🇯🇵 日本 JP
-      - 🇸🇬 狮城 SG 
-      - 🇸🇬 狮城 HC 
-      - 🌏 全球 QQ
-      - 🤟 手动选择
-  - name: 🎞 迪士尼+
-    type: select
-    proxies:
-      - 🇭🇰 香港 HK
-      - 🇭🇰 香港 IEPL
-      - 🇯🇵 日本 JP
-      - 🇸🇬 狮城 SG  
-      - 🇸🇬 狮城 HC
-      - 🌏 全球 QQ
-      - 🤟 手动选择       
-  - name: 🌏 谷歌服务
-    type: select
-    proxies:
-      - 🇭🇰 香港 HK
-      - 🇭🇰 香港 IEPL
-      - 🇯🇵 日本 JP
-      - 🇸🇬 狮城 SG 
-      - 🇸🇬 狮城 HC 
-      - 🌏 全球 QQ
-      - 🤟 手动选择
-  - name: 🌍 国际互联
-    type: select
-    proxies:
-      - 🇭🇰 香港 HK
-      - 🇭🇰 香港 IEPL
-      - 🇯🇵 日本 JP
-      - 🇸🇬 狮城 SG
-      - 🇸🇬 狮城 HC  
-      - 🌏 全球 QQ
-      - 🤟 手动选择            
-  - name: ▶️ Youtube
-    type: select
-    proxies:
-      - 🇭🇰 香港 HK
-      - 🇭🇰 香港 IEPL
-      - 🇯🇵 日本 JP
-      - 🇸🇬 狮城 SG 
-      - 🇸🇬 狮城 HC 
-      - 🌏 全球 QQ
-      - 🤟 手动选择
-  - name: 📺 港澳台区
-    type: select
-    proxies:
-      - 🇭🇰 香港 HK
-      - 🇭🇰 香港 IEPL
-      - 🇯🇵 日本 JP
-      - 🇸🇬 狮城 SG 
-      - 🇸🇬 狮城 HC 
-      - 🌏 全球 QQ
-      - 🤟 手动选择
-  - name: 🎞 国际媒体
-    type: select
-    proxies:
-      - 🇭🇰 香港 HK
-      - 🇭🇰 香港 IEPL
-      - 🇯🇵 日本 JP
-      - 🇸🇬 狮城 HC
-      - 🇸🇬 狮城 SG  
-      - 🌏 全球 QQ
-      - 🤟 手动选择
-  - name: 🚫 拦截阻断
-    type: select
-    proxies:
-      - REJECT 
-  - name: 📡 直连国内
-    type: select
-    proxies:
-      - DIRECT         
-  - name: 🎥 国内媒体
-    type: select
-    proxies:
-      - 📡 直连国内
-      - 🌍 国际互联
-  - name: 📧 微软服务
-    type: select
-    proxies:    
-      - 🌍 国际互联
-      - 📡 直连国内
-  - name: 📱 苹果服务
-    type: select
-    proxies: 
-      - 📡 直连国内
-      - 🌍 国际互联
-  - name: 🎮 游戏平台
-    type: select
-    proxies:
-      - 📡 直连国内    
-      - 🌍 国际互联
-  - name: 🐠 漏网之鱼
-    type: select
-    proxies:
-      - 🌍 国际互联
-      - 📡 直连国内  
-  - name: ⛔️ 拦截广告
-    type: select
-    proxies:
-      - 🚫 拦截阻断
-      - 📡 直连国内
-      - 🤟 手动选择       
-  - name: 🇸🇬 狮城 HC
-    type: url-test
-    use:
-      - 🇸🇬 狮城 HC
-    url: http://cp.cloudflare.com/generate_204
-    tolerance: 10
-    interval: 300              
-  - name: 🇯🇵 日本 JP
-    type: url-test
-    use:
-      - 🇯🇵 日本 JP
-    url: http://cp.cloudflare.com/generate_204
-    tolerance: 10
-    interval: 300       
-  - name: 🇸🇬 狮城 SG
-    type: url-test
-    use:
-      - 🇸🇬 狮城 SG
-    url: http://cp.cloudflare.com/generate_204
-    tolerance: 10
-    interval: 300              
-  - name: 🇭🇰 香港 HK
-    type: url-test
-    use:
-      - 🇭🇰 香港 HK
-    url: http://cp.cloudflare.com/generate_204
-  - name: 🇭🇰 香港 IEPL
-    type: url-test
-    use:
-      - 🇭🇰 香港 IEPL
-    url: http://cp.cloudflare.com/generate_204
-    tolerance: 10
-    interval: 300 
-  - name: 🌏 全球 QQ
-    type: url-test
-    use:
-      - 🌏 全球 QQ
-    url: http://cp.cloudflare.com/generate_204
-    tolerance: 10
-    interval: 300  
+- name: Telegram
+  type: select
+  disable-udp: false
+  proxies:
+  - 🇭🇰 香港-IEPL
+  - 🇭🇰 香港-AC
+  - 🇨🇳 台湾-TW    
+  - 🇸🇬 新加坡-SG
+  - 🇯🇵 日本-JP
+  - 🇺🇸 美国-US
+  - 🚀 Select
+- name: YouTube
+  type: select
+  disable-udp: true
+  proxies:
+  - 🇭🇰 香港-IEPL
+  - 🇭🇰 香港-AC
+  - 🇨🇳 台湾-TW    
+  - 🇸🇬 新加坡-SG
+  - 🇯🇵 日本-JP
+  - 🇺🇸 美国-US
+  - 🚀 Select
+- name: Netflix
+  type: select
+  disable-udp: false
+  proxies:
+  - 🇭🇰 香港-IEPL
+  - 🇭🇰 香港-AC
+  - 🇨🇳 台湾-TW    
+  - 🇸🇬 新加坡-SG
+  - 🇯🇵 日本-JP
+  - 🇺🇸 美国-US
+  - 🚀 Select
+- name: Disney
+  type: select
+  disable-udp: false
+  proxies:
+  - 🇭🇰 香港-IEPL
+  - 🇭🇰 香港-AC
+  - 🇨🇳 台湾-TW    
+  - 🇸🇬 新加坡-SG
+  - 🇯🇵 日本-JP
+  - 🇺🇸 美国-US
+  - 🚀 Select
+- name: Proxy
+  type: select
+  disable-udp: false
+  proxies:
+  - 🇭🇰 香港-IEPL
+  - 🇭🇰 香港-AC
+  - 🇨🇳 台湾-TW    
+  - 🇸🇬 新加坡-SG
+  - 🇯🇵 日本-JP
+  - 🇺🇸 美国-US
+  - 🚀 Select
+  - DIRECT  
+- name: HBO
+  type: select
+  disable-udp: false
+  proxies:
+  - Proxy
+  - 🇭🇰 香港-IEPL
+  - 🇭🇰 香港-AC
+  - 🇨🇳 台湾-TW    
+  - 🇸🇬 新加坡-SG
+  - 🇯🇵 日本-JP
+  - 🇺🇸 美国-US
+  - 🚀 Select
+  - DIRECT
+- name: Global TV
+  type: select
+  disable-udp: false
+  proxies:
+  - Proxy
+  - 🇭🇰 香港-IEPL
+  - 🇭🇰 香港-AC
+  - 🇨🇳 台湾-TW    
+  - 🇸🇬 新加坡-SG
+  - 🇯🇵 日本-JP
+  - 🇺🇸 美国-US
+  - 🚀 Select
+  - DIRECT
+- name: Others
+  type: select
+  proxies:
+  - Proxy
+  - 🇭🇰 香港-IEPL
+  - 🇭🇰 香港-AC
+  - 🇨🇳 台湾-TW    
+  - 🇸🇬 新加坡-SG
+  - 🇯🇵 日本-JP
+  - 🇺🇸 美国-US
+  - 🚀 Select
+  - DIRECT
+  - Domestic
+- name: Speedtest
+  type: select
+  disable-udp: false
+  proxies:
+  - Proxy
+  - 🇭🇰 香港-IEPL
+  - 🇭🇰 香港-AC
+  - 🇨🇳 台湾-TW    
+  - 🇸🇬 新加坡-SG
+  - 🇯🇵 日本-JP
+  - 🇺🇸 美国-US
+  - 🚀 Select
+  - DIRECT
+  - Domestic
+- name: Bahamut
+  type: select
+  proxies:
+  - Global TV
+  - DIRECT
+- name: Pornhub
+  type: select
+  proxies:
+  - Global TV
+  - DIRECT
+- name: Spotify
+  type: select
+  proxies:
+  - Global TV
+  - DIRECT
+- name: Scholar
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Asian TV
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Douyin
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy    
+- name: Domestic
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Apple
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Microsoft
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Google FCM
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy  
+- name: Steam
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: PayPal
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: AdBlock
+  type: select
+  proxies:
+  - REJECT
+  - DIRECT
+  - Proxy
 
-  - name: 🎮 游戏加速
-    type: select
-    use:   
-      - 🇭🇰 香港 HK
-      - 🇭🇰 香港 IEPL
-      - 🇯🇵 日本 JP
-      - 🇸🇬 狮城 SG 
-      - 🇸🇬 狮城 HC 
-      - 🌏 全球 QQ 
-    proxies:
-      - 📡 直连国内  
-  - name: 📶 带宽测速
-    type: select
-    proxies:
-      - 📡 直连国内
-    use:  
-      - 🇭🇰 香港 HK
-      - 🇭🇰 香港 IEPL
-      - 🇯🇵 日本 JP
-      - 🇸🇬 狮城 SG 
-      - 🇸🇬 狮城 HC 
-  - name: 🤟 手动选择
-    type: select
-    use:
-      - 🇭🇰 香港 HK
-      - 🇭🇰 香港 IEPL
-      - 🇯🇵 日本 JP
-      - 🇸🇬 狮城 SG 
-      - 🇸🇬 狮城 HC 
+- name: 🚀 Select
+  type: select
+  disable-udp: false
+  use:
+  - 🇭🇰 香港-IEPL
+  - 🇭🇰 香港-AC
+  - 🇨🇳 台湾-TW    
+  - 🇸🇬 新加坡-SG
+  - 🇯🇵 日本-JP
+  - 🇺🇸 美国-US
+
+- name: 🇭🇰 香港-IEPL
+  type: fallback
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - 🇭🇰 香港-IEPL
+
+- name: 🇭🇰 香港-AC
+  type: fallback
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - 🇭🇰 香港-AC
+
+- name: "🇨🇳 台湾-TW"
+  type: fallback
+  url: http://cp.cloudflare.com/generate_204
+  tolerance: 100
+  interval: 300
+  use:
+  - "🇨🇳 台湾-TW"
+  
+- name: 🇸🇬 新加坡-SG
+  type: fallback
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - 🇸🇬 新加坡-SG
+
+- name: 🇯🇵 日本-JP
+  type: fallback
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - 🇯🇵 日本-JP
+
+- name: 🇺🇸 美国-US
+  type: fallback
+  use:
+  - 🇺🇸 美国-US
+  url: http://cp.cloudflare.com/generate_204
+  tolerance: 100
+  interval: 300 
 
 # clash有几种策略，url-test自动测速，select手动选择，select主备切换，loadbalance轮询均衡，relay中继模式，每个都有他的优劣
 # url-test自动测速: 自动测速，我用的最多，每隔一段时间，节点自动向测速点发起连接测速，然后自动选择一个延迟最低的，但这个不是本地到节点，而是节点到测速点.
@@ -330,31 +373,31 @@ rule-providers:
     type: http                                # 规则集文件类型（HTTP=在线下载；File=本地导入）
     behavior: classical                       # 行为域
     path: ./ruleset/广告拦截/AdBlock1.list     # 规则集在线下载保存地址或本地文件导入地址
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%e5%b9%bf%e5%91%8a%e6%8b%a6%e6%88%aa/AdBlock1.list  #规则集文件下载地址
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%e5%b9%bf%e5%91%8a%e6%8b%a6%e6%88%aa/AdBlock1.list  #规则集文件下载地址
     interval: 43200                           # 规则集文件自动更新间隔
   AdBlock2:
     type: http
     behavior: classical
     path: ./ruleset/广告拦截/AdBlock2.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%e5%b9%bf%e5%91%8a%e6%8b%a6%e6%88%aa/AdBlock2.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%e5%b9%bf%e5%91%8a%e6%8b%a6%e6%88%aa/AdBlock2.list
     interval: 43200
   AdBlock3:
     type: http
     behavior: classical
     path: ./ruleset/广告拦截/AdBlock3.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%e5%b9%bf%e5%91%8a%e6%8b%a6%e6%88%aa/AdBlock3.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%e5%b9%bf%e5%91%8a%e6%8b%a6%e6%88%aa/AdBlock3.list
     interval: 43200
   AdBlock4:
     type: http
     behavior: classical
     path: ./ruleset/广告拦截/AdBlock4.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E5%B9%BF%E5%91%8A%E6%8B%A6%E6%88%AA/AdBlock4.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E5%B9%BF%E5%91%8A%E6%8B%A6%E6%88%AA/AdBlock4.list
     interval: 43200
   AdBlock5:
     type: http
     behavior: classical
     path: ./ruleset/广告拦截/AdBlock5.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%e5%b9%bf%e5%91%8a%e6%8b%a6%e6%88%aa/AdBlock5.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%e5%b9%bf%e5%91%8a%e6%8b%a6%e6%88%aa/AdBlock5.list
     interval: 43200
 ## > 媒体服务
   # > 油管
@@ -362,70 +405,70 @@ rule-providers:
     type: http
     behavior: classical
     path: ./ruleset/媒体服务/YouTube.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/YouTube.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/YouTube.list
     interval: 43200
   # > 奈飞
   Netflix:
     type: http
     behavior: classical
     path: ./ruleset/媒体服务/Netflix.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/Netflix.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/Netflix.list
     interval: 43200
   # > 迪士尼+
   Disney:
     type: http
     behavior: classical
     path: ./ruleset/媒体服务/Disney.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/Disney.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/Disney.list
     interval: 43200
   # > HBO
   HBO:
     type: http
     behavior: classical
     path: ./ruleset/媒体服务/HBO.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/HBO.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/HBO.list
     interval: 43200
   # > 港澳台媒体
   HMTmedia:
     type: http
     behavior: classical
     path: ./ruleset/媒体服务/HMTmedia.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/HMTmedia.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/HMTmedia.list
     interval: 43200
   # > 油管音乐   
   YoutubeMusic:
     type: http
     behavior: classical
     path: ./ruleset/媒体服务/YoutubeMusic.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/YoutubeMusic.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/YoutubeMusic.list
     interval: 43200
   # > Apple TV
   AppleTV:
     type: http
     behavior: classical
     path: ./ruleset/媒体服务/AppleTV.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%e5%aa%92%e4%bd%93%e6%9c%8d%e5%8a%a1/AppleTV.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%e5%aa%92%e4%bd%93%e6%9c%8d%e5%8a%a1/AppleTV.list
     interval: 43200
   # > 其余国际流媒体
   GlobalMedia:
     type: http
     behavior: classical
     path: ./ruleset/媒体服务/GlobalMedia.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/GlobalMedia.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/GlobalMedia.list
     interval: 43200
   # > 国内流媒体
   Chinesemedia:
     type: http
     behavior: classical
     path: ./ruleset/媒体服务/Chinesemedia.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/Chinesemedia.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/Chinesemedia.list
     interval: 43200
   # 网易云
   wyy:
     type: http
     behavior: classical
     path: ./ruleset/媒体服务/wyy.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/wyy.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E5%AA%92%E4%BD%93%E6%9C%8D%E5%8A%A1/wyy.list
     interval: 43200    
 ## > 网络服务
   # > 苹果服务
@@ -434,97 +477,97 @@ rule-providers:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/AppleAPI.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%e7%bd%91%e7%bb%9c%e6%9c%8d%e5%8a%a1/AppleAPI.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%e7%bd%91%e7%bb%9c%e6%9c%8d%e5%8a%a1/AppleAPI.list
     interval: 43200
   # 苹果CDN
   AppleCDN:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/AppleCDN.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/AppleCDN.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/AppleCDN.list
     interval: 43200
   # 谷歌服务
   Google:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/Google.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%e7%bd%91%e7%bb%9c%e6%9c%8d%e5%8a%a1/Google.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%e7%bd%91%e7%bb%9c%e6%9c%8d%e5%8a%a1/Google.list
     interval: 43200
   # > 谷歌CDN
   GoogleCDN:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/GoogleCDN.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%e7%bd%91%e7%bb%9c%e6%9c%8d%e5%8a%a1/GoogleCDN.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%e7%bd%91%e7%bb%9c%e6%9c%8d%e5%8a%a1/GoogleCDN.list
     interval: 43200
   # 微软服务
-  Microsoft:  
+  Microsoft:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/Microsoft.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Microsoft.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Microsoft.list
     interval: 43200
   # > 微软CDN
   MicrosoftCDN:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/MicrosoftCDN.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/MicrosoftCDN.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/MicrosoftCDN.list
     interval: 43200
   # 数字货币
   Digital:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/Digital.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Digital.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Digital.list
     interval: 43200    
   # Paypal
   Paypal:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/Paypal.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Paypal.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Paypal.list
     interval: 43200
   # Speedtest
   Speedtest:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/Speedtest.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Speedtest.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Speedtest.list
     interval: 43200
   # 即时通讯（TG,KAKAO,LINE....)
   Telegram:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/Telegram.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Telegram.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Telegram.list
     interval: 43200
   # 游戏平台（Steam,xbox,PS,战网）
   gameline:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/gameline.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/gameline.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/gameline.list
     interval: 43200
   # > 回国线路 
   Domestic:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/Domestic.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Domestic.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Domestic.list
     interval: 43200
   Lan:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/Lan.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Lan.list
+    url: http://192.168.66.35/Lan.list
     interval: 43200
   # > 国际互联
   Proxy:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/Proxy.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%e7%bd%91%e7%bb%9c%e6%9c%8d%e5%8a%a1/Proxy.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%e7%bd%91%e7%bb%9c%e6%9c%8d%e5%8a%a1/Proxy.list
     interval: 43200
 ## > 黑白名单
   # > 黑名单
@@ -532,15 +575,100 @@ rule-providers:
     type: http
     behavior: classical
     path: ./ruleset/黑白名单/Black.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E9%BB%91%E7%99%BD%E5%90%8D%E5%8D%95/Black.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E9%BB%91%E7%99%BD%E5%90%8D%E5%8D%95/Black.list
     interval: 43200
   # > 白名单
   White:
     type: http
     behavior: classical
     path: ./ruleset/黑白名单/White.list
-    url: https://raw.githubusercontent.com/clash1step/rule-provider/master/%E9%BB%91%E7%99%BD%E5%90%8D%E5%8D%95/White.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E9%BB%91%E7%99%BD%E5%90%8D%E5%8D%95/White.list
     interval: 43200
+
+rules:
+- IP-CIDR,198.18.0.1/16,REJECT,no-resolve
+- DOMAIN-SUFFIX,awesome-hd.me,DIRECT
+- DOMAIN-SUFFIX,broadcasthe.net,DIRECT
+- DOMAIN-SUFFIX,chdbits.co,DIRECT
+- DOMAIN-SUFFIX,classix-unlimited.co.uk,DIRECT
+- DOMAIN-SUFFIX,empornium.me,DIRECT
+- DOMAIN-SUFFIX,gazellegames.net,DIRECT
+- DOMAIN-SUFFIX,hdchina.org,DIRECT
+- DOMAIN-SUFFIX,hdsky.me,DIRECT
+- DOMAIN-SUFFIX,icetorrent.org,DIRECT
+- DOMAIN-SUFFIX,jpopsuki.eu,DIRECT
+- DOMAIN-SUFFIX,icetorrent.org,DIRECT
+- DOMAIN-SUFFIX,keepfrds.com,DIRECT
+- DOMAIN-SUFFIX,madsrevolution.net,DIRECT
+- DOMAIN-SUFFIX,m-team.cc,DIRECT
+- DOMAIN-SUFFIX,nanyangpt.com,DIRECT
+- DOMAIN-SUFFIX,ncore.cc,DIRECT
+- DOMAIN-SUFFIX,open.cd,DIRECT
+- DOMAIN-SUFFIX,ourbits.club,DIRECT
+- DOMAIN-SUFFIX,passthepopcorn.me,DIRECT
+- DOMAIN-SUFFIX,privatehd.to,DIRECT
+- DOMAIN-SUFFIX,redacted.ch,DIRECT
+- DOMAIN-SUFFIX,springsunday.net,DIRECT
+- DOMAIN-SUFFIX,tjupt.org,DIRECT
+- DOMAIN-SUFFIX,totheglory.im,DIRECT
+- DOMAIN-KEYWORD,announce,DIRECT
+- DOMAIN-KEYWORD,torrent,DIRECT
+- RULE-SET,Reject,AdBlock
+- RULE-SET,Special,DIRECT
+- RULE-SET,Netflix,Netflix
+- RULE-SET,Spotify,Spotify
+- RULE-SET,YouTube,YouTube
+- RULE-SET,Disney Plus,Disney
+- RULE-SET,Bilibili,Asian TV
+- RULE-SET,IQ,Asian TV
+- RULE-SET,IQIYI,Asian TV
+- RULE-SET,Letv,Asian TV
+- RULE-SET,Netease Music,Asian TV
+- RULE-SET,Tencent Video,Asian TV
+- RULE-SET,Youku,Asian TV
+- RULE-SET,WeTV,Asian TV
+- RULE-SET,ABC,Global TV
+- RULE-SET,Abema TV,Global TV
+- RULE-SET,Amazon,Global TV
+- RULE-SET,Apple News,Global TV
+- RULE-SET,Apple TV,Global TV
+- RULE-SET,Bahamut,Global TV
+- RULE-SET,BBC iPlayer,Global TV
+- RULE-SET,DAZN,Global TV
+- RULE-SET,Discovery Plus,Global TV
+- RULE-SET,encoreTVB,Global TV
+- RULE-SET,Fox Now,Global TV
+- RULE-SET,Fox+,Global TV
+- RULE-SET,HBO Go,Global TV
+- RULE-SET,HBO Max,Global TV
+- RULE-SET,Hulu Japan,Global TV
+- RULE-SET,Hulu,Global TV
+- RULE-SET,Japonx,Global TV
+- RULE-SET,JOOX,Global TV
+- RULE-SET,KKBOX,Global TV
+- RULE-SET,KKTV,Global TV
+- RULE-SET,Line TV,Global TV
+- RULE-SET,myTV SUPER,Global TV
+- RULE-SET,Pandora,Global TV
+- RULE-SET,PBS,Global TV
+- RULE-SET,Pornhub,Global TV
+- RULE-SET,Soundcloud,Global TV
+- RULE-SET,ViuTV,Global TV
+- RULE-SET,Telegram,Telegram
+- RULE-SET,Douyin,Douyin
+- RULE-SET,Steam,Steam
+- RULE-SET,Speedtest,Speedtest
+- RULE-SET,PayPal,PayPal
+- RULE-SET,Microsoft,Microsoft
+- RULE-SET,Apple,Apple
+- RULE-SET,Google FCM,Google FCM
+- RULE-SET,Scholar,Scholar
+- RULE-SET,PROXY,Proxy
+- RULE-SET,Domestic,Domestic
+- RULE-SET,Domestic IPs,Domestic
+- RULE-SET,LAN,DIRECT
+- GEOIP,CN,Domestic
+- MATCH,Others
 
 # Script匹配模式
 script:
@@ -623,4 +751,3 @@ script:
 
             # 漏网之鱼
             return "🐠 漏网之鱼"
-
