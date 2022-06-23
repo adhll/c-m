@@ -613,7 +613,7 @@ rules:
 - DOMAIN-SUFFIX,totheglory.im,DIRECT
 - DOMAIN-KEYWORD,announce,DIRECT
 - DOMAIN-KEYWORD,torrent,DIRECT
-- RULE-SET,Reject,AdBlock
+- RULE-SET,REJECT,AdBlock
 - RULE-SET,Special,DIRECT
 - RULE-SET,Netflix,Netflix
 - RULE-SET,Spotify,Spotify
