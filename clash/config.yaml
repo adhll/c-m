@@ -560,7 +560,7 @@ rule-providers:
     type: http
     behavior: classical
     path: ./ruleset/网络服务/Lan.list
-    url: http://192.168.66.35/Lan.list
+    url: https://cdn.jsdelivr.net/gh/clash1step/rule-provider@master/%E7%BD%91%E7%BB%9C%E6%9C%8D%E5%8A%A1/Lan.list
     interval: 43200
   # > 国际互联
   Proxy:
