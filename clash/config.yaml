@@ -4,7 +4,7 @@ socks-port: 7891                  # SOCKS代理端口
 redir-port: 7892                  # 透明代理端口（for Linux or MacOS）不能更改
 mixed-port: 7893                  # 集成端口，http与socks
 #authentication:                   # 验证
-#  - "yg777:yg777"                 # http与socks的账号跟密码，推荐使用
+#  - "admin:admin"                 # http与socks的账号跟密码，推荐使用
 allow-lan: true                   # 允许局域网连接
 mode: Script                      # Rule or Script    # 工作模式（有Global全局，Rule规则，Direct直连,Script脚本）
 log-level: info                   # 日志级别（info / warning / error / debug / silent）
@@ -89,7 +89,7 @@ proxy-providers:
   🇨🇳 台湾-TW:
     type: http
     path: "./proxy_provider/TW.yaml"
-    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=tw&match=CHT|HINET|SEET|Lite|AC
+    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=tw
     interval: 28800
     health-check:
       enable: true
@@ -98,7 +98,7 @@ proxy-providers:
   🇸🇬 新加坡-SG:
     type: http
     path: "./proxy_provider/SG.yaml"
-    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=sg&match=IEPL|AC|Lite|aliyun|Premium
+    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=sg
     interval: 28800
     health-check:
       enable: true
@@ -107,7 +107,7 @@ proxy-providers:
   🇯🇵 日本-JP:
     type: http
     path: "./proxy_provider/JP.yaml"
-    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=jp&match=AC|Lite|KDDI|HA
+    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=jp
     interval: 28800
     health-check:
       enable: true
@@ -116,7 +116,7 @@ proxy-providers:
   🇺🇸 美国-US:
     type: http
     path: "./proxy_provider/US.yaml"
-    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=us&match=AC|Lite|DMIT
+    url: https://dler.cloud/subscribe/token?protocols=trojan&list=clash&area=us
     interval: 28800
     health-check:
       enable: true
