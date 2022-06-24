@@ -290,9 +290,7 @@ proxy-groups:
   url: http://cp.cloudflare.com/generate_204
   tolerance: 100
   interval: 300
-
-
-
+  
 rules:
 - IP-CIDR,198.18.0.1/16,REJECT,no-resolve
 - DOMAIN-SUFFIX,awesome-hd.me,DIRECT
@@ -525,7 +523,7 @@ tun:
     - tcp://8.8.8.8:53
     - tcp://8.8.4.4:53
     - 8.8.8.8:53
-    - 8.8.8.8:53
+    - 8.8.4.4:53
 
 profile:
   store-selected: true
