@@ -510,6 +510,7 @@ mixed-port: 7893
 mode: script
 log-level: info
 allow-lan: true
+interface-name: eth_n
 external-controller: 0.0.0.0:9090
 secret: 'admin'
 bind-address: "*"
@@ -936,5 +937,3 @@ script:
             return "Domestic"
         ctx.log('[Script] FINAL')
         return "Others"
-
-interface-name: enxb827eb1b14b8
