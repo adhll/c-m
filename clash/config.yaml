@@ -1,0 +1,950 @@
+# 系统参数
+port: 7890                        # HTTP代理端口
+socks-port: 7891                  # SOCKS代理端口
+redir-port: 7892                  # 透明代理端口（for Linux or MacOS）不能更改
+mixed-port: 7893                  # 集成端口，http与socks
+#authentication:                   # 验证
+#  - "yg777:yg777"                 # http与socks的账号跟密码，推荐使用
+allow-lan: true                   # 允许局域网连接
+mode: Script                      # Rule or Script    # 工作模式（有Global全局，Rule规则，Direct直连,Script脚本）
+log-level: info                   # 日志级别（info / warning / error / debug / silent）
+ipv6: false                       # 假
+external-controller: 0.0.0.0:9090 # 外部控制面板监听端口
+external-ui: dashboard            # 外部控制面板仪表板
+secret: "admin"                   # dashboard面板的密码，同时也是tracing的密码
+interface-name: ens32             # ip a 查看接口名称，确认一致 
+profile:                          # 描述
+  store-selected: true            # 策略组选择缓存开关，打开后可以保存策略组选择，重启不会回复默认
+  tracing: true                   # tracing开关，必须打开才能对接tracing
+
+# 实验性功能
+experimental:
+  ignore-resolve-fail: true
+
+# TUN设置
+tun:
+  enable: true         
+  stack: system
+  dns-hijack:
+    - tcp://8.8.4.4:53
+    - tcp://8.8.8.8:53
+    - 8.8.4.4:53
+    - 8.8.8.8:53
+
+# DNS设置  
+dns:
+  enable: true
+  ipv6: false
+  listen: 0.0.0.0:5352         # DNS监听端口！！！clash下，此处不能改，切记！！！！
+  # DNS解析模式（redir-host # or fake-ip），这里重点解释一下：
+  # redir-host为真实IP模式，需要设置nameserver（国内）和fallback（国外）两组DNS，当设备发起DNS请求，CLASH会同时向两组里面所有服务器发起请求，然后首先拿nameserver中最快返回的结果去匹配规则，使用GEOIP判断此IP的所属区域，如果属于国内（CN）或保留地址则直接响应给客户端，其他情况则把fallback中的结果响应给客户端
+  # fake-ip则相反，当clash收到请求，会直接返回一个198.18.0.1/16的假IP给设备，同时 Clash 继续解析域名规则和 IP 规则，而且如果 Clash DNS 匹配到了域名规则、则不需要向上游 DNS 请求，Clash 已经可以直接将连接发给代理服务器，节省了 Clash DNS 向上游 DNS 请求解析
+  default-nameserver:
+    - 127.0.0.1
+  enhanced-mode: fake-ip         # 理论上来说，fake-ip具有更好的响应速度跟抗污染能力（主要还得看规则）。由于灯塔提前分流了国内外流量，国内流量不经过clash，所以选择fake-ip可以得到更好的效果，当然，还是得看规则完不完整。有需要返回真实IP的可以选择redir-host，老实说两种DNS模式在实际体验中差别不大
+  fake-ip-range: 198.18.0.1/16   # ip范围
+  use-hosts: true                # 开启
+  fake-ip-filter:                # fake-ip白名单，对于有需要返回真实IP又想用fake-ip的，可参照以下格式把域名加进去
+  - "*.lan"
+  - "*.localdomain"
+  - "*.example"
+  - "*.invalid"
+  - "*.localhost"
+  - "*.test"
+  - "*.local"
+  - "*.home.arpa"
+  - time.*.com
+  - time.*.gov
+  - time.*.edu.cn
+  - time.*.apple.com
+  - time1.*.com
+  - time2.*.com
+  - time3.*.com
+  - time4.*.com
+  - time5.*.com
+  - time6.*.com
+  - time7.*.com
+  - ntp.*.com
+  - ntp1.*.com
+  - ntp2.*.com
+  - ntp3.*.com
+  - ntp4.*.com
+  - ntp5.*.com
+  - ntp6.*.com
+  - ntp7.*.com
+  - "*.time.edu.cn"
+  - "*.ntp.org.cn"
+  - "+.pool.ntp.org"
+  - time1.cloud.tencent.com
+  - music.163.com
+  - "*.music.163.com"
+  - "*.126.net"
+  - musicapi.taihe.com
+  - music.taihe.com
+  - songsearch.kugou.com
+  - trackercdn.kugou.com
+  - "*.kuwo.cn"
+  - api-jooxtt.sanook.com
+  - api.joox.com
+  - joox.com
+  - y.qq.com
+  - "*.y.qq.com"
+  - streamoc.music.tc.qq.com
+  - mobileoc.music.tc.qq.com
+  - isure.stream.qqmusic.qq.com
+  - dl.stream.qqmusic.qq.com
+  - aqqmusic.tc.qq.com
+  - amobile.music.tc.qq.com
+  - "*.xiami.com"
+  - "*.music.migu.cn"
+  - music.migu.cn
+  - "*.msftconnecttest.com"
+  - "*.msftncsi.com"
+  - msftconnecttest.com
+  - msftncsi.com
+  - localhost.ptlogin2.qq.com
+  - localhost.sec.qq.com
+  - "+.srv.nintendo.net"
+  - "+.stun.playstation.net"
+  - xbox.*.microsoft.com
+  - xnotify.xboxlive.com
+  - "+.battlenet.com.cn"
+  - "+.wotgame.cn"
+  - "+.wggames.cn"
+  - "+.wowsgame.cn"
+  - "+.wargaming.net"
+  - proxy.golang.org
+  - stun.*.*
+  - stun.*.*.*
+  - "+.stun.*.*"
+  - "+.stun.*.*.*"
+  - "+.stun.*.*.*.*"
+  - heartbeat.belkin.com
+  - "*.linksys.com"
+  - "*.linksyssmartwifi.com"
+  - "*.router.asus.com"
+  - mesu.apple.com
+  - swscan.apple.com
+  - swquery.apple.com
+  - swdownload.apple.com
+  - swcdn.apple.com
+  - swdist.apple.com
+  - lens.l.google.com
+  - stun.l.google.com
+  - "+.nflxvideo.net"
+  - "*.square-enix.com"
+  - "*.finalfantasyxiv.com"
+  - "*.ffxiv.com"
+  - "*.notion.so"
+  - "*.www.notion.so"
+  nameserver:                    # DNS服务器（国内），此处建议只填一个速度最快的DNS就可以了
+    - 119.29.29.29
+
+# 以下就是代理，代理集（需机场支持），策略组设置。请自己观察，注意之间的对应关系!
+# 代理集设置    
+proxy-providers:
+  "\U0001F1ED\U0001F1F0 香港-IEPL":
+    type: http
+    path: "./proxy_provider/IEPL-HK.yaml"
+    url: https://dler.cloud/subscribe/token?protocols=ss&list=clash&area=hk&match=IEPL|Lite|Premium
+    interval: 28800
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 600
+  "\U0001F1ED\U0001F1F0 香港-AC":
+    type: http
+    path: "./proxy_provider/AC-HK.yaml"
+    url: https://dler.cloud/subscribe/token?protocols=ss&list=clash&area=hk&match=AC&hijack=true
+    interval: 28800
+    health-check:
+      enable: true
+      url: http://cp.cloudflare.com/generate_204
+      interval: 300
+  "\U0001F1E8\U0001F1F3 台湾-TW":
+    type: http
+    path: "./proxy_provider/TW.yaml"
+    url: https://dler.cloud/subscribe/token?protocols=ss&list=clash&area=tw&match=CHT|HINET|SEET|Lite|AC
+    interval: 28800
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 600
+  "\U0001F1F8\U0001F1EC 新加坡-SG":
+    type: http
+    path: "./proxy_provider/SG.yaml"
+    url: https://dler.cloud/subscribe/token?protocols=ss&list=clash&area=sg&match=IEPL|AC|Lite|aliyun|Premium
+    interval: 28800
+    health-check:
+      enable: true
+      url: http://cp.cloudflare.com/generate_204
+      interval: 300
+  "\U0001F1EF\U0001F1F5 日本-JP":
+    type: http
+    path: "./proxy_provider/JP.yaml"
+    url: https://dler.cloud/subscribe/token?protocols=ss&list=clash&area=jp&match=AC|Lite|KDDI|HA
+    interval: 28800
+    health-check:
+      enable: true
+      url: http://cp.cloudflare.com/generate_204
+      interval: 300
+  "\U0001F1FA\U0001F1F8 美国-US":
+    type: http
+    path: "./proxy_provider/US.yaml"
+    url: https://dler.cloud/subscribe/token?protocols=ss&list=clash&area=us&match=AC|Lite|DMIT
+    interval: 28800
+    health-check:
+      enable: true
+      url: http://cp.cloudflare.com/generate_204
+      interval: 300
+
+proxy-groups:
+- name: Telegram
+  type: select
+  disable-udp: false
+  proxies:
+  - "\U0001F1ED\U0001F1F0 香港-IEPL"
+  - "\U0001F1ED\U0001F1F0 香港-AC"
+  - "\U0001F1E8\U0001F1F3 台湾-TW"
+  - "\U0001F1F8\U0001F1EC 新加坡-SG"
+  - "\U0001F1EF\U0001F1F5 日本-JP"
+  - "\U0001F1FA\U0001F1F8 美国-US"
+  - "\U0001F680 Select"
+- name: YouTube
+  type: select
+  disable-udp: true
+  proxies:
+  - "\U0001F1ED\U0001F1F0 香港-IEPL"
+  - "\U0001F1ED\U0001F1F0 香港-AC"
+  - "\U0001F1E8\U0001F1F3 台湾-TW"
+  - "\U0001F1F8\U0001F1EC 新加坡-SG"
+  - "\U0001F1EF\U0001F1F5 日本-JP"
+  - "\U0001F1FA\U0001F1F8 美国-US"
+  - "\U0001F680 Select"
+- name: Netflix
+  type: select
+  disable-udp: false
+  proxies:
+  - "\U0001F1ED\U0001F1F0 香港-IEPL"
+  - "\U0001F1ED\U0001F1F0 香港-AC"
+  - "\U0001F1E8\U0001F1F3 台湾-TW"
+  - "\U0001F1F8\U0001F1EC 新加坡-SG"
+  - "\U0001F1EF\U0001F1F5 日本-JP"
+  - "\U0001F1FA\U0001F1F8 美国-US"
+  - "\U0001F680 Select"
+- name: Disney
+  type: select
+  disable-udp: false
+  proxies:
+  - "\U0001F1ED\U0001F1F0 香港-IEPL"
+  - "\U0001F1ED\U0001F1F0 香港-AC"
+  - "\U0001F1E8\U0001F1F3 台湾-TW"
+  - "\U0001F1F8\U0001F1EC 新加坡-SG"
+  - "\U0001F1EF\U0001F1F5 日本-JP"
+  - "\U0001F1FA\U0001F1F8 美国-US"
+  - "\U0001F680 Select"
+- name: Proxy
+  type: select
+  disable-udp: false
+  proxies:
+  - "\U0001F1ED\U0001F1F0 香港-IEPL"
+  - "\U0001F1ED\U0001F1F0 香港-AC"
+  - "\U0001F1E8\U0001F1F3 台湾-TW"
+  - "\U0001F1F8\U0001F1EC 新加坡-SG"
+  - "\U0001F1EF\U0001F1F5 日本-JP"
+  - "\U0001F1FA\U0001F1F8 美国-US"
+  - "\U0001F680 Select"
+  - DIRECT
+- name: HBO
+  type: select
+  disable-udp: false
+  proxies:
+  - Proxy
+  - "\U0001F1ED\U0001F1F0 香港-IEPL"
+  - "\U0001F1ED\U0001F1F0 香港-AC"
+  - "\U0001F1E8\U0001F1F3 台湾-TW"
+  - "\U0001F1F8\U0001F1EC 新加坡-SG"
+  - "\U0001F1EF\U0001F1F5 日本-JP"
+  - "\U0001F1FA\U0001F1F8 美国-US"
+  - "\U0001F680 Select"
+  - DIRECT
+- name: Global TV
+  type: select
+  disable-udp: false
+  proxies:
+  - Proxy
+  - "\U0001F1ED\U0001F1F0 香港-IEPL"
+  - "\U0001F1ED\U0001F1F0 香港-AC"
+  - "\U0001F1E8\U0001F1F3 台湾-TW"
+  - "\U0001F1F8\U0001F1EC 新加坡-SG"
+  - "\U0001F1EF\U0001F1F5 日本-JP"
+  - "\U0001F1FA\U0001F1F8 美国-US"
+  - "\U0001F680 Select"
+  - DIRECT
+- name: Others
+  type: select
+  proxies:
+  - Proxy
+  - "\U0001F1ED\U0001F1F0 香港-IEPL"
+  - "\U0001F1ED\U0001F1F0 香港-AC"
+  - "\U0001F1E8\U0001F1F3 台湾-TW"
+  - "\U0001F1F8\U0001F1EC 新加坡-SG"
+  - "\U0001F1EF\U0001F1F5 日本-JP"
+  - "\U0001F1FA\U0001F1F8 美国-US"
+  - "\U0001F680 Select"
+  - DIRECT
+  - Domestic
+- name: Speedtest
+  type: select
+  disable-udp: false
+  proxies:
+  - Proxy
+  - "\U0001F1ED\U0001F1F0 香港-IEPL"
+  - "\U0001F1ED\U0001F1F0 香港-AC"
+  - "\U0001F1E8\U0001F1F3 台湾-TW"
+  - "\U0001F1F8\U0001F1EC 新加坡-SG"
+  - "\U0001F1EF\U0001F1F5 日本-JP"
+  - "\U0001F1FA\U0001F1F8 美国-US"
+  - "\U0001F680 Select"
+  - DIRECT
+  - Domestic
+- name: Bahamut
+  type: select
+  proxies:
+  - Global TV
+  - DIRECT
+- name: Pornhub
+  type: select
+  proxies:
+  - Global TV
+  - DIRECT
+- name: Spotify
+  type: select
+  proxies:
+  - Global TV
+  - DIRECT
+- name: Scholar
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Asian TV
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Douyin
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Domestic
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Apple
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Microsoft
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Google FCM
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: Steam
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: PayPal
+  type: select
+  proxies:
+  - DIRECT
+  - Proxy
+- name: AdBlock
+  type: select
+  proxies:
+  - REJECT
+  - DIRECT
+  - Proxy
+- name: "\U0001F680 Select"
+  type: select
+  disable-udp: false
+  use:
+  - "\U0001F1ED\U0001F1F0 香港-IEPL"
+  - "\U0001F1ED\U0001F1F0 香港-AC"
+  - "\U0001F1E8\U0001F1F3 台湾-TW"
+  - "\U0001F1F8\U0001F1EC 新加坡-SG"
+  - "\U0001F1EF\U0001F1F5 日本-JP"
+  - "\U0001F1FA\U0001F1F8 美国-US"
+- name: "\U0001F1ED\U0001F1F0 香港-IEPL"
+  type: fallback
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - "\U0001F1ED\U0001F1F0 香港-IEPL"
+- name: "\U0001F1ED\U0001F1F0 香港-AC"
+  type: fallback
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - "\U0001F1ED\U0001F1F0 香港-AC"
+- name: "\U0001F1E8\U0001F1F3 台湾-TW"
+  type: fallback
+  url: http://cp.cloudflare.com/generate_204
+  tolerance: 100
+  interval: 300
+  use:
+  - "\U0001F1E8\U0001F1F3 台湾-TW"
+- name: "\U0001F1F8\U0001F1EC 新加坡-SG"
+  type: fallback
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - "\U0001F1F8\U0001F1EC 新加坡-SG"
+- name: "\U0001F1EF\U0001F1F5 日本-JP"
+  type: fallback
+  url: http://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  use:
+  - "\U0001F1EF\U0001F1F5 日本-JP"
+- name: "\U0001F1FA\U0001F1F8 美国-US"
+  type: fallback
+  use:
+  - "\U0001F1FA\U0001F1F8 美国-US"
+  url: http://cp.cloudflare.com/generate_204
+  tolerance: 100
+  interval: 300
+
+# clash有几种策略，url-test自动测速，select手动选择，select主备切换，loadbalance轮询均衡，relay中继模式，每个都有他的优劣
+# url-test自动测速: 自动测速，我用的最多，每隔一段时间，节点自动向测速点发起连接测速，然后自动选择一个延迟最低的，但这个不是本地到节点，而是节点到测速点.
+# select手动选择: 手动选择，顾名思义，手动，不会自动切换.
+# select主备切换: 主备切换，节点先发起测速，然后选择第一个可用的节点，一定时间内在测速，如果选择的节点挂了，就顺位换，不挂就继续用，但不考虑延迟.
+# loadbalance轮询均衡: 轮训均衡，跟负载均衡差不多，但没什么用.
+# relay中继模式: 中继模式，就是可以自定义多个节点的中继行为 
+
+#规则集
+rule-providers:
+  Reject:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Reject.yaml
+    path: "./rule_provider/Reject"
+    interval: 86400
+  Special:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Special.yaml
+    path: "./rule_provider/Special"
+    interval: 86400
+  Netflix:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Netflix.yaml
+    path: "./rule_provider/Netflix"
+    interval: 86400
+  Spotify:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Spotify.yaml
+    path: "./rule_provider/Spotify"
+    interval: 86400
+  YouTube:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/YouTube.yaml
+    path: "./rule_provider/YouTube"
+    interval: 86400
+  Bilibili:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Bilibili.yaml
+    path: "./rule_provider/Bilibili"
+    interval: 86400
+  IQ:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/IQ.yaml
+    path: "./rule_provider/IQ"
+    interval: 86400
+  IQIYI:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/IQIYI.yaml
+    path: "./rule_provider/IQIYI"
+    interval: 86400
+  Letv:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Letv.yaml
+    path: "./rule_provider/Letv"
+    interval: 86400
+  Netease Music:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Netease%20Music.yaml
+    path: "./rule_provider/Netease_Music"
+    interval: 86400
+  Tencent Video:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Tencent%20Video.yaml
+    path: "./rule_provider/Tencent_Video"
+    interval: 86400
+  Youku:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Youku.yaml
+    path: "./rule_provider/Youku"
+    interval: 86400
+  WeTV:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/WeTV.yaml
+    path: "./rule_provider/WeTV"
+    interval: 86400
+  ABC:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/ABC.yaml
+    path: "./rule_provider/ABC"
+    interval: 86400
+  Abema TV:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Abema%20TV.yaml
+    path: "./rule_provider/Abema_TV"
+    interval: 86400
+  Amazon:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Amazon.yaml
+    path: "./rule_provider/Amazon"
+    interval: 86400
+  Apple News:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Apple%20News.yaml
+    path: "./rule_provider/Apple_News"
+    interval: 86400
+  Apple TV:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Apple%20TV.yaml
+    path: "./rule_provider/Apple_TV"
+    interval: 86400
+  Bahamut:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Bahamut.yaml
+    path: "./rule_provider/Bahamut"
+    interval: 86400
+  BBC iPlayer:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/BBC%20iPlayer.yaml
+    path: "./rule_provider/BBC_iPlayer"
+    interval: 86400
+  DAZN:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/DAZN.yaml
+    path: "./rule_provider/DAZN"
+    interval: 86400
+  Discovery Plus:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Discovery%20Plus.yaml
+    path: "./rule_provider/Discovery_Plus"
+    interval: 86400
+  Disney Plus:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Disney%20Plus.yaml
+    path: "./rule_provider/Disney_Plus"
+    interval: 86400
+  encoreTVB:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/encoreTVB.yaml
+    path: "./rule_provider/encoreTVB"
+    interval: 86400
+  Fox Now:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Fox%20Now.yaml
+    path: "./rule_provider/Fox_Now"
+    interval: 86400
+  Fox+:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Fox%2B.yaml
+    path: "./rule_provider/Fox+"
+    interval: 86400
+  HBO Go:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/HBO%20Go.yaml
+    path: "./rule_provider/HBO_Go"
+    interval: 86400
+  HBO Max:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/HBO%20Max.yaml
+    path: "./rule_provider/HBO_Max"
+    interval: 86400
+  Hulu Japan:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Hulu%20Japan.yaml
+    path: "./rule_provider/Hulu_Japan"
+    interval: 86400
+  Hulu:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Hulu.yaml
+    path: "./rule_provider/Hulu"
+    interval: 86400
+  Japonx:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Japonx.yaml
+    path: "./rule_provider/Japonx"
+    interval: 86400
+  JOOX:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/JOOX.yaml
+    path: "./rule_provider/JOOX"
+    interval: 86400
+  KKBOX:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/KKBOX.yaml
+    path: "./rule_provider/KKBOX"
+    interval: 86400
+  KKTV:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/KKTV.yaml
+    path: "./rule_provider/KKTV"
+    interval: 86400
+  Line TV:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Line%20TV.yaml
+    path: "./rule_provider/Line_TV"
+    interval: 86400
+  myTV SUPER:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/myTV%20SUPER.yaml
+    path: "./rule_provider/myTV_SUPER"
+    interval: 86400
+  Pandora:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Pandora.yaml
+    path: "./rule_provider/Pandora"
+    interval: 86400
+  PBS:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/PBS.yaml
+    path: "./rule_provider/PBS"
+    interval: 86400
+  Pornhub:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Pornhub.yaml
+    path: "./rule_provider/Pornhub"
+    interval: 86400
+  Soundcloud:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/Soundcloud.yaml
+    path: "./rule_provider/Soundcloud"
+    interval: 86400
+  ViuTV:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Media/ViuTV.yaml
+    path: "./rule_provider/ViuTV"
+    interval: 86400
+  Telegram:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Telegram.yaml
+    path: "./rule_provider/Telegram"
+    interval: 86400
+  Douyin:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Douyin.yaml
+    path: "./rule_provider/Douyin"
+    interval: 86400
+  Steam:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Steam.yaml
+    path: "./rule_provider/Steam"
+    interval: 86400
+  Speedtest:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Speedtest.yaml
+    path: "./rule_provider/Speedtest"
+    interval: 86400
+  PayPal:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/PayPal.yaml
+    path: "./rule_provider/PayPal"
+    interval: 86400
+  Microsoft:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Microsoft.yaml
+    path: "./rule_provider/Microsoft"
+    interval: 86400
+  PROXY:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Proxy.yaml
+    path: "./rule_provider/Proxy"
+    interval: 86400
+  Domestic:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Domestic.yaml
+    path: "./rule_provider/Domestic"
+    interval: 86400
+  Apple:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Apple.yaml
+    path: "./rule_provider/Apple"
+    interval: 86400
+  Google FCM:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Google%20FCM.yaml
+    path: "./rule_provider/Google FCM"
+    interval: 86400
+  Scholar:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/Scholar.yaml
+    path: "./rule_provider/Scholar"
+    interval: 86400
+  Domestic IPs:
+    type: http
+    behavior: ipcidr
+    url: https://dler.cloud/Rules/Clash/Provider/Domestic%20IPs.yaml
+    path: "./rule_provider/Domestic_IPs"
+    interval: 86400
+  LAN:
+    type: http
+    behavior: classical
+    url: https://dler.cloud/Rules/Clash/Provider/LAN.yaml
+    path: "./rule_provider/LAN"
+    interval: 86400
+
+rules:
+- IP-CIDR,198.18.0.1/16,REJECT,no-resolve
+- DST-PORT,7895,REJECT
+- DST-PORT,7892,REJECT
+- DOMAIN-SUFFIX,awesome-hd.me,DIRECT
+- DOMAIN-SUFFIX,broadcasthe.net,DIRECT
+- DOMAIN-SUFFIX,chdbits.co,DIRECT
+- DOMAIN-SUFFIX,classix-unlimited.co.uk,DIRECT
+- DOMAIN-SUFFIX,empornium.me,DIRECT
+- DOMAIN-SUFFIX,gazellegames.net,DIRECT
+- DOMAIN-SUFFIX,hdchina.org,DIRECT
+- DOMAIN-SUFFIX,hdsky.me,DIRECT
+- DOMAIN-SUFFIX,icetorrent.org,DIRECT
+- DOMAIN-SUFFIX,jpopsuki.eu,DIRECT
+- DOMAIN-SUFFIX,keepfrds.com,DIRECT
+- DOMAIN-SUFFIX,madsrevolution.net,DIRECT
+- DOMAIN-SUFFIX,m-team.cc,DIRECT
+- DOMAIN-SUFFIX,nanyangpt.com,DIRECT
+- DOMAIN-SUFFIX,ncore.cc,DIRECT
+- DOMAIN-SUFFIX,open.cd,DIRECT
+- DOMAIN-SUFFIX,ourbits.club,DIRECT
+- DOMAIN-SUFFIX,passthepopcorn.me,DIRECT
+- DOMAIN-SUFFIX,privatehd.to,DIRECT
+- DOMAIN-SUFFIX,redacted.ch,DIRECT
+- DOMAIN-SUFFIX,springsunday.net,DIRECT
+- DOMAIN-SUFFIX,tjupt.org,DIRECT
+- DOMAIN-SUFFIX,totheglory.im,DIRECT
+- DOMAIN-SUFFIX,smtp,DIRECT
+- DOMAIN-KEYWORD,announce,DIRECT
+- DOMAIN-KEYWORD,torrent,DIRECT
+- DOMAIN-KEYWORD,tracker,DIRECT
+- DOMAIN-SUFFIX,awesome-hd.me,DIRECT
+- DOMAIN-SUFFIX,broadcasthe.net,DIRECT
+- DOMAIN-SUFFIX,chdbits.co,DIRECT
+- DOMAIN-SUFFIX,classix-unlimited.co.uk,DIRECT
+- DOMAIN-SUFFIX,empornium.me,DIRECT
+- DOMAIN-SUFFIX,gazellegames.net,DIRECT
+- DOMAIN-SUFFIX,hdchina.org,DIRECT
+- DOMAIN-SUFFIX,hdsky.me,DIRECT
+- DOMAIN-SUFFIX,icetorrent.org,DIRECT
+- DOMAIN-SUFFIX,jpopsuki.eu,DIRECT
+- DOMAIN-SUFFIX,icetorrent.org,DIRECT
+- DOMAIN-SUFFIX,keepfrds.com,DIRECT
+- DOMAIN-SUFFIX,madsrevolution.net,DIRECT
+- DOMAIN-SUFFIX,m-team.cc,DIRECT
+- DOMAIN-SUFFIX,nanyangpt.com,DIRECT
+- DOMAIN-SUFFIX,ncore.cc,DIRECT
+- DOMAIN-SUFFIX,open.cd,DIRECT
+- DOMAIN-SUFFIX,ourbits.club,DIRECT
+- DOMAIN-SUFFIX,passthepopcorn.me,DIRECT
+- DOMAIN-SUFFIX,privatehd.to,DIRECT
+- DOMAIN-SUFFIX,redacted.ch,DIRECT
+- DOMAIN-SUFFIX,springsunday.net,DIRECT
+- DOMAIN-SUFFIX,tjupt.org,DIRECT
+- DOMAIN-SUFFIX,totheglory.im,DIRECT
+- DOMAIN-KEYWORD,announce,DIRECT
+- DOMAIN-KEYWORD,torrent,DIRECT
+- RULE-SET,Reject,AdBlock
+- RULE-SET,Special,DIRECT
+- RULE-SET,Netflix,Netflix
+- RULE-SET,Spotify,Spotify
+- RULE-SET,YouTube,YouTube
+- RULE-SET,Disney Plus,Disney
+- RULE-SET,Bilibili,Asian TV
+- RULE-SET,IQ,Asian TV
+- RULE-SET,IQIYI,Asian TV
+- RULE-SET,Letv,Asian TV
+- RULE-SET,Netease Music,Asian TV
+- RULE-SET,Tencent Video,Asian TV
+- RULE-SET,Youku,Asian TV
+- RULE-SET,WeTV,Asian TV
+- RULE-SET,ABC,Global TV
+- RULE-SET,Abema TV,Global TV
+- RULE-SET,Amazon,Global TV
+- RULE-SET,Apple News,Global TV
+- RULE-SET,Apple TV,Global TV
+- RULE-SET,Bahamut,Global TV
+- RULE-SET,BBC iPlayer,Global TV
+- RULE-SET,DAZN,Global TV
+- RULE-SET,Discovery Plus,Global TV
+- RULE-SET,encoreTVB,Global TV
+- RULE-SET,Fox Now,Global TV
+- RULE-SET,Fox+,Global TV
+- RULE-SET,HBO Go,Global TV
+- RULE-SET,HBO Max,Global TV
+- RULE-SET,Hulu Japan,Global TV
+- RULE-SET,Hulu,Global TV
+- RULE-SET,Japonx,Global TV
+- RULE-SET,JOOX,Global TV
+- RULE-SET,KKBOX,Global TV
+- RULE-SET,KKTV,Global TV
+- RULE-SET,Line TV,Global TV
+- RULE-SET,myTV SUPER,Global TV
+- RULE-SET,Pandora,Global TV
+- RULE-SET,PBS,Global TV
+- RULE-SET,Pornhub,Global TV
+- RULE-SET,Soundcloud,Global TV
+- RULE-SET,ViuTV,Global TV
+- RULE-SET,Telegram,Telegram
+- RULE-SET,Douyin,Douyin
+- RULE-SET,Steam,Steam
+- RULE-SET,Speedtest,Speedtest
+- RULE-SET,PayPal,PayPal
+- RULE-SET,Microsoft,Microsoft
+- RULE-SET,Apple,Apple
+- RULE-SET,Google FCM,Google FCM
+- RULE-SET,Scholar,Scholar
+- RULE-SET,PROXY,Proxy
+- RULE-SET,Domestic,Domestic
+- RULE-SET,Domestic IPs,Domestic
+- RULE-SET,LAN,DIRECT
+- GEOIP,CN,Domestic
+- PROCESS-NAME,aria2c,DIRECT
+- PROCESS-NAME,BitComet,DIRECT
+- PROCESS-NAME,fdm,DIRECT
+- PROCESS-NAME,NetTransport,DIRECT
+- PROCESS-NAME,qbittorrent,DIRECT
+- PROCESS-NAME,Thunder,DIRECT
+- PROCESS-NAME,transmission-daemon,DIRECT
+- PROCESS-NAME,transmission-qt,DIRECT
+- PROCESS-NAME,uTorrent,DIRECT
+- PROCESS-NAME,WebTorrent,DIRECT
+- PROCESS-NAME,aria2c,DIRECT
+- PROCESS-NAME,fdm,DIRECT
+- PROCESS-NAME,Folx,DIRECT
+- PROCESS-NAME,NetTransport,DIRECT
+- PROCESS-NAME,qbittorrent,DIRECT
+- PROCESS-NAME,Thunder,DIRECT
+- PROCESS-NAME,Transmission,DIRECT
+- PROCESS-NAME,transmission,DIRECT
+- PROCESS-NAME,uTorrent,DIRECT
+- PROCESS-NAME,WebTorrent,DIRECT
+- PROCESS-NAME,WebTorrent Helper,DIRECT
+- PROCESS-NAME,v2ray,DIRECT
+- PROCESS-NAME,ss-local,DIRECT
+- PROCESS-NAME,ssr-local,DIRECT
+- PROCESS-NAME,ss-redir,DIRECT
+- PROCESS-NAME,ssr-redir,DIRECT
+- PROCESS-NAME,ss-server,DIRECT
+- PROCESS-NAME,trojan-go,DIRECT
+- PROCESS-NAME,xray,DIRECT
+- PROCESS-NAME,hysteria,DIRECT
+- PROCESS-NAME,UUBooster,DIRECT
+- PROCESS-NAME,uugamebooster,DIRECT
+- DST-PORT,80,Others
+- DST-PORT,443,Others
+- DST-PORT,22,Others
+- MATCH,DIRECT
+
+# Script匹配模式
+script:
+  code: "def main(ctx, metadata):\n    ruleset_action = {\"Reject\": \"AdBlock\",\n
+    \       \"Special\": \"DIRECT\",\n        \"Netflix\": \"Netflix\",\n        \"Spotify\":
+    \"Spotify\",\n        \"YouTube\": \"YouTube\",\n        \"Disney Plus\": \"Disney\",\n
+    \       \"Bilibili\": \"Asian TV\",\n        \"IQ\": \"Asian TV\",\n        \"IQIYI\":
+    \"Asian TV\",\n        \"Letv\": \"Asian TV\",\n        \"Netease Music\": \"Asian
+    TV\",\n        \"Tencent Video\": \"Asian TV\",\n        \"Youku\": \"Asian TV\",\n
+    \       \"WeTV\": \"Asian TV\",\n        \"ABC\": \"Global TV\",\n        \"Abema
+    TV\": \"Global TV\",\n        \"Amazon\": \"Global TV\",\n        \"Apple News\":
+    \"Global TV\",\n        \"Apple TV\": \"Global TV\",\n        \"Bahamut\": \"Global
+    TV\",\n        \"BBC iPlayer\": \"Global TV\",\n        \"DAZN\": \"Global TV\",\n
+    \       \"Discovery Plus\": \"Global TV\",\n        \"encoreTVB\": \"Global TV\",\n
+    \       \"Fox Now\": \"Global TV\",\n        \"Fox+\": \"Global TV\",\n        \"HBO
+    Go\": \"Global TV\",\n        \"HBO Max\": \"Global TV\",\n        \"Hulu Japan\":
+    \"Global TV\",\n        \"Hulu\": \"Global TV\",\n        \"Japonx\": \"Global
+    TV\",\n        \"JOOX\": \"Global TV\",\n        \"KKBOX\": \"Global TV\",\n        \"KKTV\":
+    \"Global TV\",\n        \"Line TV\": \"Global TV\",\n        \"myTV SUPER\": \"Global
+    TV\",\n        \"Pandora\": \"Global TV\",\n        \"PBS\": \"Global TV\",\n
+    \       \"Pornhub\": \"Global TV\",\n        \"Soundcloud\": \"Global TV\",\n
+    \       \"ViuTV\": \"Global TV\",\n        \"Telegram\": \"Telegram\",\n        \"Douyin\":
+    \"Douyin\",           \n        \"Steam\": \"Steam\",\n        \"Speedtest\":
+    \"Speedtest\",\n        \"PayPal\": \"PayPal\",\n        \"Microsoft\": \"Microsoft\",\n
+    \       \"Apple\": \"Apple\",\n        \"Google FCM\": \"Google FCM\",\n        \"Scholar\":
+    \"Scholar\",\n        \"PROXY\": \"Proxy\",\n        \"Domestic\": \"Domestic\",\n
+    \       \"Domestic IPs\": \"Domestic\",\n        \"LAN\": \"DIRECT\"\n      }\n
+    \   port = int(metadata[\"dst_port\"])\n    if metadata[\"network\"] == \"UDP\":\n
+    \       if port == 443:\n            ctx.log('[Script] matched QUIC traffic use
+    reject')\n            return \"REJECT\"\n    port_list = [21, 22, 23, 53, 80,
+    123, 143, 194, 443, 465, 587, 853, 993, 995, 998, 2052, 2053, 2082, 2083, 2086,
+    2095, 2096, 5222, 5228, 5229, 5230, 8080, 8443, 8880, 8888, 8889]\n    if port
+    not in port_list:\n        ctx.log('[Script] not common port use direct')\n        return
+    \"DIRECT\"\n    if metadata[\"dst_ip\"] == \"\":\n        metadata[\"dst_ip\"]
+    = ctx.resolve_ip(metadata[\"host\"])\n    for ruleset in ruleset_action:\n        if
+    ctx.rule_providers[ruleset].match(metadata):\n            return ruleset_action[ruleset]\n
+    \   if metadata[\"dst_ip\"] == \"\":\n        return \"DIRECT\"\n    code = ctx.geoip(metadata[\"dst_ip\"])\n
+    \   if code == \"CN\":\n        ctx.log('[Script] Geoip CN')\n        return \"Domestic\"\n
+    \   ctx.log('[Script] FINAL')\n    return \"Others\"\n"
