@@ -12,7 +12,7 @@ ipv6: false                       # 假
 external-controller: 0.0.0.0:9090 # 外部控制面板监听端口
 external-ui: dashboard            # 外部控制面板仪表板
 secret: "admin"                   # dashboard面板的密码，同时也是tracing的密码
-interface-name: ens32             # ip a 查看接口名称，确认一致 
+interface-name: eth_n             # ip a 查看接口名称，确认一致 
 profile:                          # 描述
   store-selected: true            # 策略组选择缓存开关，打开后可以保存策略组选择，重启不会回复默认
   tracing: true                   # tracing开关，必须打开才能对接tracing
