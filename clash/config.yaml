@@ -4,15 +4,15 @@ socks-port: 7891                  # SOCKS代理端口
 redir-port: 7892                  # 透明代理端口（for Linux or MacOS）不能更改
 mixed-port: 7893                  # 集成端口，http与socks
 #authentication:                   # 验证
-#  - "yg777:yg777"                 # http与socks的账号跟密码，推荐使用
+#  - "admin:admin"                 # http与socks的账号跟密码，推荐使用
 allow-lan: true                   # 允许局域网连接
 mode: Script                      # Rule or Script    # 工作模式（有Global全局，Rule规则，Direct直连,Script脚本）
 log-level: info                   # 日志级别（info / warning / error / debug / silent）
 ipv6: false                       # 假
 external-controller: 0.0.0.0:9090 # 外部控制面板监听端口
 external-ui: dashboard            # 外部控制面板仪表板
-secret: "admin"                   # dashboard面板的密码，同时也是tracing的密码
-interface-name: ens32             # ip a 查看接口名称，确认一致 
+secret: "123456"                   # dashboard面板的密码，同时也是tracing的密码
+interface-name: eth_n             # ip a 查看接口名称，确认一致 
 profile:                          # 描述
   store-selected: true            # 策略组选择缓存开关，打开后可以保存策略组选择，重启不会回复默认
   tracing: true                   # tracing开关，必须打开才能对接tracing
